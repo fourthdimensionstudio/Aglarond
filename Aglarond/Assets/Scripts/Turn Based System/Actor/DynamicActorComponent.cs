@@ -24,7 +24,6 @@ namespace FourthDimension.TurnBased.Actor {
                 return;
             }
 
-            // TODO Handle Scale Changing here
             StartCoroutine(MovementRoutine(_movementDirection, 0.1f));
         }
 
@@ -32,12 +31,28 @@ namespace FourthDimension.TurnBased.Actor {
             m_isActorCurrentlyMoving = true;
             Vector2 originalPosition = m_currentPosition;
             Vector2 movementDirection = Input.InputUtilities.GetMovementVectorFromDirection(_movementDirection);
-            Vector2 destinationPosition = originalPosition + movementDirection;
 
+            // Handling Scale Change here
+            if(movementDirection.x != 0) {
+                transform.localScale = new Vector3(Mathf.Sign(movementDirection.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+
+            Vector2 midwayPoint = originalPosition + new Vector2(movementDirection.x / 2, movementDirection.y / 2 + 0.25f);
+            Vector2 destinationPosition = originalPosition + movementDirection;
             // The Actor's current position is updated before the animation is set
             m_currentPosition = destinationPosition;
-            
+
+            // Beautifully Handling the movement
+            Sequence movementSequence = DOTween.Sequence();
+            movementSequence.Append(transform.DOMove(midwayPoint, 0.1f).SetEase(Ease.InOutQuint));
+            movementSequence.Append(transform.DOMove(destinationPosition, 0.1f).SetEase(Ease.OutBack));
+            movementSequence.onComplete += OnMovementRoutineFinished;
+            movementSequence.Play();
+
             yield return null;
+        }
+
+        private void OnMovementRoutineFinished() {
             m_isActorCurrentlyMoving = false;
             transform.position = m_currentPosition;
         }

@@ -27,12 +27,12 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public override bool HasTakenTurn() {
-            if(m_currentMovementDirection != Input.EMovementDirection.NONE) {
-                Move(m_currentMovementDirection, true, false);
-                return true;
-            } else {
+            if(m_currentMovementDirection == Input.EMovementDirection.NONE) {
                 return false;
             }
+
+            Move(m_currentMovementDirection, true, false);
+            return true;
         }
     }
 }
