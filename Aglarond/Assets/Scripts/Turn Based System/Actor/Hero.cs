@@ -31,7 +31,7 @@ namespace FourthDimension.TurnBased.Actor {
                 return false;
             }
 
-            Move(m_currentMovementDirection, true, false);
+            Move(m_currentMovementDirection);
             return true;
         }
     }

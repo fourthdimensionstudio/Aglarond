@@ -41,6 +41,7 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public abstract bool HasTakenTurn();
+
         // TODO HasTakenEnforcedTurn?
         // TODO PlayAudioClip?
     }

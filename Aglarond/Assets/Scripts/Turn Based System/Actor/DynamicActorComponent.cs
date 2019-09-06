@@ -5,13 +5,16 @@ using DG.Tweening;
 
 namespace FourthDimension.TurnBased.Actor {
     public class DynamicActorComponent : BaseActor {
+        [Header("Collision Detection")]
+        public LayerMask movementBlockedLayers;
+        public LayerMask triggersLayers;
+
         // TODO Stats?
         // TODO Collision Handling?
         // TODO Sounds?
         // TODO Particles?
         // TODO Death?
         // TODO Events OnActorAttacked, OnActorDeath, etc...
-        // TODO Movement
         private bool m_isActorCurrentlyMoving = false;
 
         // TODO Implement Has Taken Turn
@@ -19,26 +22,92 @@ namespace FourthDimension.TurnBased.Actor {
             return true;
         }
 
-        public void Move(Input.EMovementDirection _movementDirection, bool _canMove, bool _hasActed) {
+        public void Move(Input.EMovementDirection _movementDirection) {
+            Vector2 movementDirection = Input.InputUtilities.GetMovementVectorFromDirection(_movementDirection);
+            // Handling Combat
+            bool willEngageInCombat = WillEngageOnCombatOnMovement(movementDirection);
+            bool canMoveOnDirection = false;
+
+            // Handling Movement
+            if (!willEngageInCombat) {
+                canMoveOnDirection = CanMoveOnDirection(movementDirection);
+            }
+
+            Move(movementDirection, canMoveOnDirection, willEngageInCombat);
+        }
+
+        private bool WillEngageOnCombatOnMovement(Vector2 _movementDirection) {
+            Vector2 positionToAttack = m_currentPosition + _movementDirection;
+
+            // TODO this reference is awfully bad, fix it.
+            TurnBasedSystemManager tbsManager = FindObjectOfType<TurnBasedSystemManager>();
+            if(tbsManager.IsThereAnActorAt(positionToAttack)) {
+                return true;
+
+                // TODO Handle Combat (dealing/taking damage)
+            }
+
+            return false;
+        }
+
+        protected bool CanMoveOnDirection(Vector2 _movementDirection) {
+            if (_movementDirection == Vector2.zero) {
+                return false;
+            }
+
+            // TODO Handle Interfaces when player move to position ?
+
+            Collider2D blockedCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, movementBlockedLayers);
+
+            if (blockedCollision) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void Move(Vector2 _movementDirection, bool _canMove, bool _hasActed) {
             if (m_isActorCurrentlyMoving) {
                 return;
             }
 
-            StartCoroutine(MovementRoutine(_movementDirection, 0.1f));
+            if(_hasActed) {
+                StartCoroutine(ActedRoutine(_movementDirection, 0.1f));
+            } else if(_canMove) {
+                StartCoroutine(MovementRoutine(_movementDirection, 0.1f));
+            }
         }
 
-        private IEnumerator MovementRoutine(Input.EMovementDirection _movementDirection, float _timeToMove) {
+        // TODO Maybe those doesn't even need to me a Coroutine
+        // TODO Acted Routine and Movement Routine share a lot of code
+        private IEnumerator ActedRoutine(Vector2 _directionWhichActed, float _actionTime) {
             m_isActorCurrentlyMoving = true;
             Vector2 originalPosition = m_currentPosition;
-            Vector2 movementDirection = Input.InputUtilities.GetMovementVectorFromDirection(_movementDirection);
-
             // Handling Scale Change here
-            if(movementDirection.x != 0) {
-                transform.localScale = new Vector3(Mathf.Sign(movementDirection.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            if (_directionWhichActed.x != 0) {
+                transform.localScale = new Vector3(Mathf.Sign(_directionWhichActed.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
 
-            Vector2 midwayPoint = originalPosition + new Vector2(movementDirection.x / 2, movementDirection.y / 2 + 0.25f);
-            Vector2 destinationPosition = originalPosition + movementDirection;
+            Sequence actionSequence = DOTween.Sequence();
+            actionSequence.Append(transform.DOMove(m_currentPosition + _directionWhichActed, _actionTime / 2.0f).SetEase(Ease.InOutExpo));
+            actionSequence.Append(transform.DOMove(m_currentPosition, _actionTime / 2.0f).SetEase(Ease.InOutExpo));
+            actionSequence.onComplete += OnMovementRoutineFinished;
+            actionSequence.Play();
+
+            yield return null;
+        }
+
+        private IEnumerator MovementRoutine(Vector2 _movementDirection, float _timeToMove) {
+            m_isActorCurrentlyMoving = true;
+            Vector2 originalPosition = m_currentPosition;
+
+            // Handling Scale Change here
+            if(_movementDirection.x != 0) {
+                transform.localScale = new Vector3(Mathf.Sign(_movementDirection.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+
+            Vector2 midwayPoint = originalPosition + new Vector2(_movementDirection.x / 2, _movementDirection.y / 2 + 0.25f);
+            Vector2 destinationPosition = originalPosition + _movementDirection;
             // The Actor's current position is updated before the animation is set
             m_currentPosition = destinationPosition;
 
