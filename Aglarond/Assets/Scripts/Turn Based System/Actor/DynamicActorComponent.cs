@@ -7,6 +7,7 @@ namespace FourthDimension.TurnBased.Actor {
     public class DynamicActorComponent : BaseActor {
         [Header("Actor Stats")]
         public DynamicActorStats actorStat;
+        protected int m_currentHealth;
 
         [Header("Collision Detection")]
         public LayerMask movementBlockedLayers;
@@ -17,6 +18,15 @@ namespace FourthDimension.TurnBased.Actor {
         // TODO Death?
         // TODO Events OnActorAttacked, OnActorDeath, etc...
         private bool m_isActorCurrentlyMoving = false;
+
+        // EVENTS
+        public event System.Action onActorAttacked;
+        public event System.Action onActorSufferedDamage;
+
+        public override void InitializeActor(EActorType _actorType) {
+            base.InitializeActor(_actorType);
+            m_currentHealth = actorStat.maxHealth;
+        }
 
         #region ENTRY POINTS
         public override bool HasTakenTurn() {
@@ -124,16 +134,36 @@ namespace FourthDimension.TurnBased.Actor {
         #region COMBAT HANDLING
         public void ActorDealtDamage() {
             // TODO Play Sound
-            // TODO Particle Effects ?
             Debug.Log($"{this.name} attacked!");
+
+            onActorAttacked?.Invoke();
         }
 
         public void ActorSufferedDamage(int _damage) {
             // TODO Play Sound
             // TODO Particle Effects?
-            // TODO Die
-            Debug.Log($"{this.name} suffered {_damage} damage");
+            m_currentHealth -= _damage;
+
+            if (m_currentHealth < 0) {
+                Die();
+            } else {
+                onActorSufferedDamage();
+            }
         }
+
+        private void Die() {
+            // TODO Particle Effects ?
+            // TODO Sound ?
+            // TODO Instantiate a dead body ?
+            TurnBasedSystemManager.instance.RemoveDynamicActorFromScene(this);
+            Destroy(gameObject);
+        }
+        #endregion
+
+        #region JUICE
+        // Screen Shake
+        // Sound Effects
+        // Particle Effects
         #endregion
     }
 }
