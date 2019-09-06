@@ -56,7 +56,6 @@ namespace FourthDimension.TurnBased.Actor {
             }
 
             // TODO Handle Interfaces when player move to position ?
-
             Collider2D blockedCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, movementBlockedLayers);
 
             if (blockedCollision) {
@@ -74,53 +73,46 @@ namespace FourthDimension.TurnBased.Actor {
             }
 
             if(_hasActed) {
-                StartCoroutine(ActedRoutine(_movementDirection, 0.1f));
+                ActorActed(_movementDirection, 0.1f);
             } else if(_canMove) {
-                StartCoroutine(MovementRoutine(_movementDirection, 0.1f));
+                ActorMoved(_movementDirection, 0.15f);
             }
         }
 
-        // TODO Maybe those doesn't even need to me a Coroutine
-        // TODO Acted Routine and Movement Routine share a lot of code
-        private IEnumerator ActedRoutine(Vector2 _directionWhichActed, float _actionTime) {
-            m_isActorCurrentlyMoving = true;
-            Vector2 originalPosition = m_currentPosition;
-            // Handling Scale Change here
-            if (_directionWhichActed.x != 0) {
-                transform.localScale = new Vector3(Mathf.Sign(_directionWhichActed.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
+        private void ActorActed(Vector2 _directionWhichActed, float _actionTime) {
+            InitializeMovementAndAction(_directionWhichActed);
 
             Sequence actionSequence = DOTween.Sequence();
             actionSequence.Append(transform.DOMove(m_currentPosition + _directionWhichActed, _actionTime / 2.0f).SetEase(Ease.InOutExpo));
+            actionSequence.AppendInterval(0.1f);
             actionSequence.Append(transform.DOMove(m_currentPosition, _actionTime / 2.0f).SetEase(Ease.InOutExpo));
             actionSequence.onComplete += OnMovementRoutineFinished;
             actionSequence.Play();
-
-            yield return null;
         }
 
-        private IEnumerator MovementRoutine(Vector2 _movementDirection, float _timeToMove) {
-            m_isActorCurrentlyMoving = true;
-            Vector2 originalPosition = m_currentPosition;
+        private void ActorMoved(Vector2 _movementDirection, float _timeToMove) {
+            InitializeMovementAndAction(_movementDirection);
 
-            // Handling Scale Change here
-            if(_movementDirection.x != 0) {
-                transform.localScale = new Vector3(Mathf.Sign(_movementDirection.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
-
-            Vector2 midwayPoint = originalPosition + new Vector2(_movementDirection.x / 2, _movementDirection.y / 2 + 0.25f);
-            Vector2 destinationPosition = originalPosition + _movementDirection;
+            Vector2 midwayPoint = m_currentPosition + new Vector2(_movementDirection.x / 2, _movementDirection.y / 2 + 0.25f);
+            Vector2 destinationPosition = m_currentPosition + _movementDirection;
             // The Actor's current position is updated before the animation is set
             m_currentPosition = destinationPosition;
 
             // Beautifully Handling the movement
             Sequence movementSequence = DOTween.Sequence();
-            movementSequence.Append(transform.DOMove(midwayPoint, 0.1f).SetEase(Ease.InOutQuint));
-            movementSequence.Append(transform.DOMove(destinationPosition, 0.1f).SetEase(Ease.OutBack));
+            movementSequence.Append(transform.DOMove(midwayPoint, _timeToMove / 2.0f).SetEase(Ease.InOutQuint));
+            movementSequence.Append(transform.DOMove(destinationPosition, _timeToMove / 2.0f).SetEase(Ease.OutBack));
             movementSequence.onComplete += OnMovementRoutineFinished;
             movementSequence.Play();
+        }
 
-            yield return null;
+        private void InitializeMovementAndAction(Vector2 _direction) {
+            m_isActorCurrentlyMoving = true;
+
+            // Handling Scale Change here
+            if (_direction.x != 0) {
+                transform.localScale = new Vector3(Mathf.Sign(_direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
         }
 
         private void OnMovementRoutineFinished() {
