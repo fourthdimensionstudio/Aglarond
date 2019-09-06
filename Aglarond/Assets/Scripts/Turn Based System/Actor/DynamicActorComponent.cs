@@ -13,7 +13,11 @@ namespace FourthDimension.TurnBased.Actor {
         public LayerMask movementBlockedLayers;
         public LayerMask triggersLayers;
 
-        // TODO Sounds?
+        [Header("Sound Effects")]
+        public AudioClip[] actorAttackedSounds;
+        public AudioClip[] actorDamagedSounds;
+        public AudioClip[] actorDiedSounds;
+
         // TODO Particles?
         // TODO Death?
         // TODO Events OnActorAttacked, OnActorDeath, etc...
@@ -133,37 +137,29 @@ namespace FourthDimension.TurnBased.Actor {
 
         #region COMBAT HANDLING
         public void ActorDealtDamage() {
-            // TODO Play Sound
-            Debug.Log($"{this.name} attacked!");
-
+            PlaySoundEffect(actorAttackedSounds.RandomOrDefault());
             onActorAttacked?.Invoke();
         }
 
         public void ActorSufferedDamage(int _damage) {
-            // TODO Play Sound
             // TODO Particle Effects?
             m_currentHealth -= _damage;
 
             if (m_currentHealth < 0) {
                 Die();
             } else {
-                onActorSufferedDamage();
+                PlaySoundEffect(actorDamagedSounds.RandomOrDefault());
+                onActorSufferedDamage?.Invoke();
             }
         }
 
         private void Die() {
             // TODO Particle Effects ?
-            // TODO Sound ?
             // TODO Instantiate a dead body ?
+            PlaySoundEffect(actorDiedSounds.RandomOrDefault());
             TurnBasedSystemManager.instance.RemoveDynamicActorFromScene(this);
             Destroy(gameObject);
         }
-        #endregion
-
-        #region JUICE
-        // Screen Shake
-        // Sound Effects
-        // Particle Effects
         #endregion
     }
 }

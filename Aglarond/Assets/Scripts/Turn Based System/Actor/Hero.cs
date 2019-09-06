@@ -12,11 +12,11 @@ namespace FourthDimension.TurnBased.Actor {
         private void Awake() {
             // TODO Mobile Input
             m_playerInputSystem = new Input.AxisInput();
-
-            // TODO Subscribe to OnActorAttack the screenshake function
-            // TODO Subscribe to OnActorDeath the player die function
-
             InitializeActor(EActorType.Player);
+
+            onActorAttacked += (() => {
+                ShakeScreen(.5f);
+            });
         }
 
         private void Update() {

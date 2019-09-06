@@ -44,6 +44,19 @@ namespace FourthDimension.TurnBased.Actor {
         public abstract bool HasTakenTurn();
 
         // TODO HasTakenEnforcedTurn?
-        // TODO PlayAudioClip?
+
+        #region JUICE
+        protected void ShakeScreen(float _amount, CameraUtilities.EShakeStyle _style = CameraUtilities.EShakeStyle.DIRECTIONAL) {
+            // SINGLETON REFERENCE
+            CameraUtilities.CameraHolder.instance.AddTraumaToCamera(_amount, _style);
+        }
+
+        protected void PlaySoundEffect(AudioClip _clip) {
+            // SINGLETON REFERENCE
+            Managers.SoundManager.instance.PlayEffect(_clip);
+        }
+
+        // Particle Effects
+        #endregion
     }
 }

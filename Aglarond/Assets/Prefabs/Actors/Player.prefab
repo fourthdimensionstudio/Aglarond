@@ -51,6 +51,33 @@ MonoBehaviour:
   triggersLayers:
     serializedVersion: 2
     m_Bits: 0
+  actorAttackedSounds:
+  - {fileID: 8300000, guid: 65537cbd9ec0e4b96b642ac7fbdebc18, type: 3}
+  - {fileID: 8300000, guid: 27c3a27eea6db4539a12573ec095c476, type: 3}
+  - {fileID: 8300000, guid: 54c480e009cc8447a8860132c0578657, type: 3}
+  - {fileID: 8300000, guid: 89499d02f0ccf46e281a4a144d7a569f, type: 3}
+  - {fileID: 8300000, guid: de98ff4d5c37e4658933d48dec8988ff, type: 3}
+  - {fileID: 8300000, guid: a0ee2f66ae7594e8783f09537ac1a5b1, type: 3}
+  - {fileID: 8300000, guid: 2ebe56412c199403d8598adefcf48b86, type: 3}
+  - {fileID: 8300000, guid: 26c7c6467572e4f869d2134190e9cbc1, type: 3}
+  - {fileID: 8300000, guid: d08e17313ff484e80b9ca12cd64fa0d5, type: 3}
+  - {fileID: 8300000, guid: d73e43cc5a5db4a02b10d3793ddd7035, type: 3}
+  - {fileID: 8300000, guid: f4aa9174d3f494fec8f54d167584cf6e, type: 3}
+  - {fileID: 8300000, guid: 24df0440b8dc1437fbc41e1f710a67b1, type: 3}
+  - {fileID: 8300000, guid: f073dedb05f9b48a382850bf8a68d2fe, type: 3}
+  - {fileID: 8300000, guid: f4c903d3679c4435b8d07daad9173e81, type: 3}
+  - {fileID: 8300000, guid: c5653acd6ca0f4069b916a403cf3e1dc, type: 3}
+  - {fileID: 8300000, guid: 96d4860c5aa63486bb327d6ed28bef1d, type: 3}
+  actorDamagedSounds:
+  - {fileID: 8300000, guid: ef0536b15b444431dbb7caf62b21b75a, type: 3}
+  - {fileID: 8300000, guid: 8c2a0590852874d7c8a072b60d8b67c2, type: 3}
+  - {fileID: 8300000, guid: f5aff87baf6e24c5b9936e0f26a2f4f5, type: 3}
+  - {fileID: 8300000, guid: 6f56968ecfee047b78c1f64b8f4b2640, type: 3}
+  - {fileID: 8300000, guid: b3a4e2387888d483d88b88588f12079c, type: 3}
+  actorDiedSounds:
+  - {fileID: 8300000, guid: 24fb20f673d974fc5b527c0aa31ffe56, type: 3}
+  - {fileID: 8300000, guid: 7a0123116d83543a7a648de5b9b03701, type: 3}
+  - {fileID: 8300000, guid: 792ba8886f9674573a6ed7e2ccbe29fa, type: 3}
 --- !u!1 &2583590187203433488
 GameObject:
   m_ObjectHideFlags: 0

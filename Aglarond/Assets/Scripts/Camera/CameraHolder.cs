@@ -12,6 +12,9 @@ namespace FourthDimension.CameraUtilities {
     }
 
     public class CameraHolder : MonoBehaviour {
+        // SINGLETON
+        public static CameraHolder instance;
+
         [Header("Cameras on Scene")]
         public Camera mainCamera;
         public Camera screenshakeCamera;
@@ -23,6 +26,14 @@ namespace FourthDimension.CameraUtilities {
         private float m_cameraTrauma;
         private EShakeStyle m_shakeStyle;
         private Coroutine m_shakeRoutine;
+
+        private void Awake() {
+            if(instance == null) {
+                instance = this;
+            } else {
+                Destroy(gameObject);
+            }
+        }
 
         private void Start() {
             m_shakeRoutine = null;
