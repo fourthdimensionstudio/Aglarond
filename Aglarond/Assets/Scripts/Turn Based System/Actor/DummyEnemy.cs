@@ -9,7 +9,6 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public override bool HasTakenTurn() {
-            Debug.Log("Dummy Enemy Turn!");
             return true;
         }
     }

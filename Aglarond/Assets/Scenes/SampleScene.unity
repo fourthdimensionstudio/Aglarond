@@ -296,6 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf776ce9e8209d42a8af05127450422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actorStat: {fileID: 11400000, guid: de5ae583cf241f8439b931bc52eab5d7, type: 2}
   movementBlockedLayers:
     serializedVersion: 2
     m_Bits: 0

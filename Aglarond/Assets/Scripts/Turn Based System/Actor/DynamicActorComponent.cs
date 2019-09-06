@@ -5,19 +5,20 @@ using DG.Tweening;
 
 namespace FourthDimension.TurnBased.Actor {
     public class DynamicActorComponent : BaseActor {
+        [Header("Actor Stats")]
+        public DynamicActorStats actorStat;
+
         [Header("Collision Detection")]
         public LayerMask movementBlockedLayers;
         public LayerMask triggersLayers;
 
-        // TODO Stats?
-        // TODO Collision Handling?
         // TODO Sounds?
         // TODO Particles?
         // TODO Death?
         // TODO Events OnActorAttacked, OnActorDeath, etc...
         private bool m_isActorCurrentlyMoving = false;
 
-        // TODO Implement Has Taken Turn
+        #region ENTRY POINTS
         public override bool HasTakenTurn() {
             return true;
         }
@@ -35,16 +36,15 @@ namespace FourthDimension.TurnBased.Actor {
 
             Move(movementDirection, canMoveOnDirection, willEngageInCombat);
         }
+        #endregion
 
         private bool WillEngageOnCombatOnMovement(Vector2 _movementDirection) {
             Vector2 positionToAttack = m_currentPosition + _movementDirection;
 
-            // TODO this reference is awfully bad, fix it.
-            TurnBasedSystemManager tbsManager = FindObjectOfType<TurnBasedSystemManager>();
-            if(tbsManager.IsThereAnActorAt(positionToAttack)) {
+            // SINGLETON REFERENCE
+            if(TurnBasedSystemManager.instance.IsThereAnActorAt(positionToAttack)) {
+                TurnBasedSystemManager.instance.HandleCombat(this, TurnBasedSystemManager.instance.WhatActorIsAtPosition(positionToAttack));
                 return true;
-
-                // TODO Handle Combat (dealing/taking damage)
             }
 
             return false;
@@ -65,6 +65,8 @@ namespace FourthDimension.TurnBased.Actor {
 
             return true;
         }
+
+        #region MOVEMENT HANDLING
 
         private void Move(Vector2 _movementDirection, bool _canMove, bool _hasActed) {
             if (m_isActorCurrentlyMoving) {
@@ -125,5 +127,21 @@ namespace FourthDimension.TurnBased.Actor {
             m_isActorCurrentlyMoving = false;
             transform.position = m_currentPosition;
         }
+        #endregion
+
+        #region COMBAT HANDLING
+        public void ActorDealtDamage() {
+            // TODO Play Sound
+            // TODO Particle Effects ?
+            Debug.Log($"{this.name} attacked!");
+        }
+
+        public void ActorSufferedDamage(int _damage) {
+            // TODO Play Sound
+            // TODO Particle Effects?
+            // TODO Die
+            Debug.Log($"{this.name} suffered {_damage} damage");
+        }
+        #endregion
     }
 }

@@ -44,6 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec78b7e47eff6d49b891acd55190326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actorStat: {fileID: 11400000, guid: 2b7d6f3388494ed4db84a67346e28bed, type: 2}
+  movementBlockedLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  triggersLayers:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &2583590187203433488
 GameObject:
   m_ObjectHideFlags: 0

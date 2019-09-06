@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace FourthDimension.TurnBased {
     public class TurnBasedSystemManager : MonoBehaviour {
+        // SINGLETON
+        public static TurnBasedSystemManager instance;
+
+        [Header("RNG Configuration")]
+        public float damageRandomInterval = 0.2f;
+
         private Actor.DynamicActorComponent[] m_dynamicActorsOnScene;
         // TODO have a differentiation between dynamicActorsOnScene and TurnList
 
@@ -12,6 +18,12 @@ namespace FourthDimension.TurnBased {
 
         // TODO Initialize System Function
         private void Awake() {
+            if(instance == null) {
+                instance = this;
+            } else {
+                Destroy(gameObject);
+            }
+
             m_dynamicActorsOnScene = FindObjectsOfType<Actor.DynamicActorComponent>();
             Debug.Log($"[TURN BASED SYSTEM MANAGER] Awaking TUrnBasedSystemManager - {m_dynamicActorsOnScene.Length} Dynamic Actors on Scene");
         }
@@ -45,7 +57,7 @@ namespace FourthDimension.TurnBased {
 
             return null;
         }
-#endregion
+        #endregion
 
 
         // ------------------------------------------------------------------
@@ -58,6 +70,17 @@ namespace FourthDimension.TurnBased {
             if(m_dynamicActorsOnScene[m_currentActorTurn].HasTakenTurn()) {
                 m_currentActorTurn = ((m_currentActorTurn + 1) % m_dynamicActorsOnScene.Length);
             }
+        }
+        #endregion
+
+        #region COMBAT SYSTEM
+        public void HandleCombat(Actor.DynamicActorComponent _actorDealingDamage, Actor.DynamicActorComponent _actorTakingDamage) {
+            _actorDealingDamage.ActorDealtDamage();
+            _actorTakingDamage.ActorSufferedDamage(CalculateDamage(_actorDealingDamage.actorStat.baseDamage, damageRandomInterval));
+        }
+
+        private int CalculateDamage(int _baseDamage, float _randomModifier) {
+            return Random.Range(Mathf.RoundToInt(_baseDamage * (1 - _randomModifier)), Mathf.RoundToInt(_baseDamage * (1 + _randomModifier)) + 1);
         }
         #endregion
 

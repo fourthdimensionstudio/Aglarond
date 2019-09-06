@@ -5,9 +5,6 @@ using UnityEngine;
 namespace FourthDimension.TurnBased.Actor {
     public class Hero : DynamicActorComponent {
         // TODO movement denied clip
-        // TODO input buffering time
-        // TODO remember input time
-        // TODO last input movement
 
         private Input.BaseInput m_playerInputSystem;
         private Input.EMovementDirection m_currentMovementDirection;

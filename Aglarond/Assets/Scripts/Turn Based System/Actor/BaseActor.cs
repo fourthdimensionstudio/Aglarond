@@ -13,6 +13,7 @@ namespace FourthDimension.TurnBased.Actor {
     }
 
     public abstract class BaseActor : MonoBehaviour {
+
         protected Vector2 m_currentPosition;
         public Vector2 CurrentPosition {
             get {
