@@ -20,7 +20,11 @@ namespace FourthDimension.TurnBased.Actor {
 
         // TODO Particles?
         // TODO Death?
-        // TODO Events OnActorAttacked, OnActorDeath, etc...
+
+        // Sprite Flashing Related
+        private const float km_flashDelayTime = 0.1f;
+        private SpriteRenderer m_actorSpriteRenderer;
+
         private bool m_isActorCurrentlyMoving = false;
 
         // EVENTS
@@ -30,6 +34,8 @@ namespace FourthDimension.TurnBased.Actor {
         public override void InitializeActor(EActorType _actorType) {
             base.InitializeActor(_actorType);
             m_currentHealth = actorStat.maxHealth;
+
+            m_actorSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
 
         #region ENTRY POINTS
@@ -142,14 +148,28 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public void ActorSufferedDamage(int _damage) {
+            // TODO Flash ?
             // TODO Particle Effects?
             m_currentHealth -= _damage;
 
             if (m_currentHealth < 0) {
                 Die();
             } else {
+                if(m_actorSpriteRenderer != null) {
+                    StartCoroutine(FlashRoutine());
+                }
+
                 PlaySoundEffect(actorDamagedSounds.RandomOrDefault());
                 onActorSufferedDamage?.Invoke();
+            }
+        }
+
+        private IEnumerator FlashRoutine() {
+            for(int i = 0; i < 2; i++) {
+                m_actorSpriteRenderer.material.SetFloat("_FlashAmount", 1.0f);
+                yield return new WaitForSeconds(km_flashDelayTime);
+                m_actorSpriteRenderer.material.SetFloat("_FlashAmount", 0.0f);
+                yield return new WaitForSeconds(km_flashDelayTime);
             }
         }
 
