@@ -7,6 +7,7 @@ namespace FourthDimension.Dungeon {
     public class DungeonGeneration : MonoBehaviour {
         [Header("Tilemaps")]
         public Tilemap carvedRooms;
+        public Tile solidRock;
         public Tile roomTile;
         public Tile mazeTile;
 
@@ -24,6 +25,7 @@ namespace FourthDimension.Dungeon {
         // -----------------------------------------------------
 
         private List<Room> m_rooms;
+        private List<Maze> m_mazes;
         private int m_currentRegion = -1;
 
         private List<Vector3Int> m_cardinalMoves = new List<Vector3Int> {
@@ -53,8 +55,10 @@ namespace FourthDimension.Dungeon {
 
         private void Start() {
             m_rooms = new List<Room>();
+            m_mazes = new List<Maze>();
             AddRooms();
             AddMaze();
+            CreateConnections();
         }
 
         #region ROOM GENERATION
@@ -88,10 +92,8 @@ namespace FourthDimension.Dungeon {
                     continue;
                 }
 
+                roomToAdd.region = ++m_currentRegion;
                 m_rooms.Add(roomToAdd);
-
-                // Starting a new region
-                m_currentRegion++;
                 CarveRoom(roomToAdd);
             }
 
@@ -107,6 +109,7 @@ namespace FourthDimension.Dungeon {
         }
         #endregion
 
+        #region MAZE GENERATION
         // 2. Generate the Mazes
         private void AddMaze() {
             int tilemapWidth = carvedRooms.size.x;
@@ -125,6 +128,7 @@ namespace FourthDimension.Dungeon {
 
         private void StartMazeOnPoint(Vector3Int _point) {
             Debug.Log("Starting Maze");
+            Maze mazeBeingCreated = new Maze(_point, ++m_currentRegion);
 
             int tilemapWidth = carvedRooms.size.x;
             int tilemapHeight = carvedRooms.size.y;
@@ -164,6 +168,7 @@ namespace FourthDimension.Dungeon {
                             currentPoint += chosenMove;
                             visitedPositions.Push(currentPoint);
                             carvedRooms.SetTile(currentPoint, mazeTile);
+                            mazeBeingCreated.mazePoints.Add(currentPoint);
                             break;
                         }
                     }
@@ -178,6 +183,8 @@ namespace FourthDimension.Dungeon {
                     }
                 }
             }
+
+            m_mazes.Add(mazeBeingCreated);
         }
 
         /// <summary>
@@ -225,8 +232,19 @@ namespace FourthDimension.Dungeon {
             // Debug.Log($"[Does Tile Has Room Adjacents] {totalAdjacents} total adjacents");
             return (totalAdjacents > 0);
         }
+        #endregion
 
         // 3. Make the Connections
+        private void CreateConnections() {
+            foreach(Room room in m_rooms) {
+                Debug.Log($"Room Region: {room.region}");
+            }
+
+            foreach(Maze maze in m_mazes) {
+                Debug.Log($"Maze Region: {maze.region}");
+            }
+        }
+
         // 4. Cleanup dead ends
     }
 }

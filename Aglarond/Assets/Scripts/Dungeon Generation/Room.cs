@@ -22,6 +22,7 @@ namespace FourthDimension.Dungeon {
         public Vector2 roomPosition;
         public int width;
         public int height;
+        public int region;
         public RoomBoundaries roomBoundaries;
 
         public Room(Vector2 _roomPosition, int _width, int _height) {
