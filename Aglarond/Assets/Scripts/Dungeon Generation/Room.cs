@@ -38,10 +38,27 @@ namespace FourthDimension.Dungeon {
         }
 
         public bool CollidesWith(Room _other) {
-            return (
-                Mathf.Abs(roomPosition.x - _other.roomPosition.x) * 2 < (width + _other.width) &&
-                Mathf.Abs(roomPosition.y - _other.roomPosition.y) * 2 < (height + _other.height)
-                );
+            // this room is on the left
+            if(roomBoundaries.bottomLeft.x + width < _other.roomBoundaries.bottomLeft.x) {
+                return false;
+            }
+
+            // this room is on the right
+            if(_other.roomBoundaries.bottomLeft.x + _other.width < roomBoundaries.bottomLeft.x) {
+                return false;
+            }
+
+            // this room is above
+            if(roomBoundaries.bottomLeft.y > _other.roomBoundaries.topLeft.y) {
+                return false;
+            }
+
+            // this room is below
+            if(roomBoundaries.topLeft.y < _other.roomBoundaries.bottomLeft.y) {
+                return false;
+            }
+
+            return true;
         }
     }
 }

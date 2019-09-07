@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace FourthDimension.Dungeon {
     public class DungeonGeneration : MonoBehaviour {
+        [Header("Tilemaps")]
+        public Tilemap carvedRooms;
+        public Tile roomTile;
+
         // Configuration
-        private const int km_stageWidth = 320;
-        private const int km_stageHeight = 320;
+        private const int km_stageWidth = 40;
+        private const int km_stageHeight = 40;
 
         private const int km_attemptsToPlaceRoom = 200;
         private const float km_extraConnectorChance = 20;
@@ -49,9 +54,18 @@ namespace FourthDimension.Dungeon {
 
                 // Starting a new region
                 m_currentRegion++;
+                CarveRoom(roomToAdd);
             }
 
             Debug.Log($"Room Generation finished, {m_currentRegion} regions and {m_rooms.Count} rooms");
+        }
+
+        private void CarveRoom(Room _room) {
+            for(int x = (int)_room.roomBoundaries.bottomLeft.x; x < _room.roomBoundaries.bottomRight.x; x++) {
+                for(int y = (int)_room.roomBoundaries.bottomLeft.y; y < _room.roomBoundaries.topLeft.y; y++) {
+                    carvedRooms.SetTile(new Vector3Int(x, y, 0), roomTile);
+                }
+            }
         }
         // 2. Generate the Mazes
         // 3. Make the Connections
