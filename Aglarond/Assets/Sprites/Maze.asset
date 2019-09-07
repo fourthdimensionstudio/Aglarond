@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Maze
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: db5b5d184ee6e1849bc306e8e2d8c246, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6226415, g: 0.07929868, b: 0.5325223, a: 1}
   m_Transform:
     e00: 1
     e01: 0
