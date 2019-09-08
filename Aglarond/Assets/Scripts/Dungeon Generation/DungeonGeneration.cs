@@ -4,12 +4,18 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace FourthDimension.Dungeon {
+    /*
+     * Dungeon Generation
+     * Possible Optimizations:
+     *      1. 
+     */
     public class DungeonGeneration : MonoBehaviour {
         [Header("Tilemaps")]
         public Tilemap carvedRooms;
         public Tile solidRock;
         public Tile roomTile;
         public Tile mazeTile;
+        public Tile possibleConnector;
 
         //---------------------------------------- Configuration
         // TODO Make a ScriptableObject with the config variables
@@ -56,6 +62,11 @@ namespace FourthDimension.Dungeon {
         private void Start() {
             m_rooms = new List<Room>();
             m_mazes = new List<Maze>();
+
+            GenerateDungeon();
+        }
+
+        private void GenerateDungeon() {
             AddRooms();
             AddMaze();
             CreateConnections();
@@ -234,17 +245,80 @@ namespace FourthDimension.Dungeon {
         }
         #endregion
 
+        #region CREATING CONNECTIONS
         // 3. Make the Connections
+        // TODO some very poorly optimized code below, beware!
+        /*
+         * Rules for creating the connections:
+         *      1. Tile is Null
+         *      2. Tile is adjacent to two regions of different colors
+         */
         private void CreateConnections() {
-            foreach(Room room in m_rooms) {
-                Debug.Log($"Room Region: {room.region}");
+            List<Vector3Int> possibleConnectorsPositions = new List<Vector3Int>();
+
+            for(int x = 0; x < carvedRooms.size.x; x++) {
+                for(int y = 0; y < carvedRooms.size.y; y++) {
+                    Vector3Int positionToInvestigate = new Vector3Int(x, y, 0);
+                    if(carvedRooms.GetTile(positionToInvestigate) == null) {
+                        // It is null, it might be a possible connections.
+                        // For it to be a connection it has to be adjacent to two different regions
+                        
+                        if(IsAdjacentToTwoDifferentRegions(positionToInvestigate)) {
+                            possibleConnectorsPositions.Add(positionToInvestigate);
+                        }
+                    }
+                }
             }
 
-            foreach(Maze maze in m_mazes) {
-                Debug.Log($"Maze Region: {maze.region}");
+            // Here we should have all our possible connectors.
+            Debug.Log($"Total Possible Connectors: {possibleConnectorsPositions.Count}");
+            foreach(Vector3Int connector in possibleConnectorsPositions) {
+                // carvedRooms.SetTile(connector, possibleConnector);
             }
         }
 
+        // TODO Beware this is the main source of inefficiency of the entire generation system
+        private bool IsAdjacentToTwoDifferentRegions(Vector3Int _position) {
+            List<int> adjacentRegions = new List<int>();
+
+            foreach(Vector3Int move in m_cardinalMoves) {
+                Vector3Int positionToBeVerified = _position + move;
+                TileBase adjacentTile = carvedRooms.GetTile(positionToBeVerified);
+
+                if (adjacentTile != null) {
+                    if(adjacentTile == roomTile) {
+                        foreach(Room room in m_rooms) {
+                            if(room.IsPositionWithinTheRoom(positionToBeVerified)) {
+                                if(!adjacentRegions.Contains(room.region)) {
+                                    adjacentRegions.Add(room.region);
+                                    break;
+                                }
+                            }
+                        }
+                    } else if(adjacentTile == mazeTile) {
+                        foreach(Maze maze in m_mazes) {
+                            if(maze.IsPositionWithinMaze(positionToBeVerified)) {
+                                if(!adjacentRegions.Contains(maze.region)) {
+                                    adjacentRegions.Add(maze.region);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(adjacentRegions.Count == 1) {
+                Debug.Log("Carving position with  1 adjacent region");
+                carvedRooms.SetTile(_position, possibleConnector);
+            }
+
+            return (adjacentRegions.Count > 1);
+        }
+        #endregion
+
+        #region CLEANUP
         // 4. Cleanup dead ends
+        #endregion
     }
 }

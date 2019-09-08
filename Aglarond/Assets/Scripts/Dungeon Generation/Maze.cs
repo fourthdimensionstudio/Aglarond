@@ -14,5 +14,9 @@ namespace FourthDimension.Dungeon {
             mazePoints = new List<Vector3Int>();
             mazePoints.Add(_startingPoint);
         }
+
+        public bool IsPositionWithinMaze(Vector3Int _position) {
+            return mazePoints.Contains(_position);
+        }
     }
 }

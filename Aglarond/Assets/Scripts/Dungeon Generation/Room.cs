@@ -61,5 +61,14 @@ namespace FourthDimension.Dungeon {
 
             return true;
         }
+
+        /// <summary>
+        /// Check if a determined position is within this room
+        /// </summary>
+        /// <param name="_position">position to verified</param>
+        /// <returns>whether or not the position is within the room</returns>
+        public bool IsPositionWithinTheRoom(Vector3Int _position) {
+            return (_position.x >= roomBoundaries.bottomLeft.x && _position.x <= roomBoundaries.bottomRight.x && _position.y <= roomBoundaries.topLeft.y && _position.y <= roomBoundaries.bottomLeft.y);
+        }
     }
 }
