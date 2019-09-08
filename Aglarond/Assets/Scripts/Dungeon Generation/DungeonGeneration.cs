@@ -85,7 +85,6 @@ namespace FourthDimension.Dungeon {
         }
 
         #region ROOM GENERATION
-        // 1. Generate the Rooms
         private void AddRooms() {
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 // 1. Pick a random room size
@@ -133,7 +132,6 @@ namespace FourthDimension.Dungeon {
         #endregion
 
         #region MAZE GENERATION
-        // 2. Generate the Mazes
         private void AddMaze() {
             int tilemapWidth = carvedRooms.size.x;
             int tilemapHeight = carvedRooms.size.y;
@@ -150,7 +148,6 @@ namespace FourthDimension.Dungeon {
         }
 
         private void StartMazeOnPoint(Vector3Int _point) {
-            Debug.Log("Starting Maze");
             Maze mazeBeingCreated = new Maze(_point, ++m_currentRegion);
 
             int tilemapWidth = carvedRooms.size.x;
@@ -270,31 +267,40 @@ namespace FourthDimension.Dungeon {
                 for(int y = 0; y < carvedRooms.size.y; y++) {
                     Vector3Int positionToInvestigate = new Vector3Int(x, y, 0);
                     if(carvedRooms.GetTile(positionToInvestigate) == null) {
-                        // It is null, it might be a possible connections.
+                        // If it is null, it might be a possible connections.
                         // For it to be a connection it has to be adjacent to two different regions
                         VerifyConnectivity(positionToInvestigate);
                     }
                 }
             }
 
-            // Here we should have all our possible connectors.
-            // Change This...
-            // Pick a Room
-            // Pick every connector that has that room to connected regions
-            // Choose one connector for every different region being connected
-
-            // TODO This way of connecting is not working, find a new way to connect rooms and keep track of regions better...
-
+            // DEBUGGING Printing all possible Connectors...
             /*
-            m_connectors.Shuffle();
             foreach(Connector connector in m_connectors) {
-                if(!connector.AreRegionsConnected()) {
-                // if(!connector.AreRegionsConnected() || Random.value < km_extraConnectorChance) {
-                    connector.ConnectAllRegions();
-                    carvedRooms.SetTile(connector.connectorPosition, possibleConnector);
-                }
+                carvedRooms.SetTile(connector.connectorPosition, possibleConnector);
             }
             */
+
+            m_connectors.Shuffle();
+            List<Connector> possibleConnectors = m_connectors;
+            List<Connector> removedConnectors = new List<Connector>();
+            do {
+                Connector chosenConnector = possibleConnectors[0];
+                possibleConnectors.RemoveAt(0);
+                chosenConnector.ConnectAllRegions();
+                carvedRooms.SetTile(chosenConnector.connectorPosition, possibleConnector);
+
+                // Removing from the possible connectors all connectors that unify the same regions
+                for(int i = 0; i < possibleConnectors.Count; i++) {
+                    if(possibleConnectors[i].DoesConnectorUnifyTheseRegions(chosenConnector.connectedRegions)) {
+                        removedConnectors.Add(possibleConnectors[i]);
+                        possibleConnectors.RemoveAt(i);
+                        i--;
+                    }
+                }
+            } while (possibleConnectors.Count > 0);
+
+            Debug.Log($"Removed Connectors: {removedConnectors.Count}");
         }
 
         // TODO Beware this is the main source of inefficiency of the entire generation system
@@ -349,7 +355,6 @@ namespace FourthDimension.Dungeon {
         #endregion
 
         #region CLEANUP
-        // 4. Cleanup dead ends
         private void CleanDeadEnds() {
             List<Vector3Int> tilesToClean = new List<Vector3Int>();
 

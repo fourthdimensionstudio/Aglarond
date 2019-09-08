@@ -5,65 +5,57 @@ using UnityEngine;
 namespace FourthDimension.Dungeon {
     public class Connector {
         public Vector3Int connectorPosition;
-        public List<Maze> connectedMazes;
-        public List<Room> connectedRooms;
+        public List<Region> connectedRegions;
+        public List<int> connectedRegionsNumbers;
 
         public Connector(Vector3Int _connectorPosition) {
             connectorPosition = _connectorPosition;
-            connectedMazes = new List<Maze>();
-            connectedRooms = new List<Room>();
+            connectedRegions = new List<Region>();
+            connectedRegionsNumbers = new List<int>();
         }
 
-        public void AddConnectedRegion(Maze _connectedMaze) {
-            connectedMazes.Add(_connectedMaze);
-        }
-
-        public void AddConnectedRegion(Room _connectedRoom) {
-            connectedRooms.Add(_connectedRoom);
+        public void AddConnectedRegion(Region _region) {
+            connectedRegions.Add(_region);
+            connectedRegionsNumbers.Add(_region.region);
         }
 
         public void ConnectAllRegions() {
             int lowestRegion = int.MaxValue;
 
             // Getting Lowest Region Value
-            foreach(Maze maze in connectedMazes) {
-                if(maze.region < lowestRegion) {
-                    lowestRegion = maze.region;
-                }
-            }
-
-            foreach(Room room in connectedRooms) {
-                if(room.region < lowestRegion) {
-                    lowestRegion = room.region;
+            foreach(Region region in connectedRegions) {
+                if(region.region < lowestRegion) {
+                    lowestRegion = region.region;
                 }
             }
 
             // Assigning Them
-            foreach(Maze maze in connectedMazes) {
-                maze.region = lowestRegion;
-            }
-
-            foreach(Room room in connectedRooms) {
-                room.region = lowestRegion;
+            foreach(Region region in connectedRegions) {
+                region.region = lowestRegion;
             }
         }
 
         public bool AreRegionsConnected() {
             List<int> regions = new List<int>();
 
-            foreach(Maze maze in connectedMazes) {
-                if(!regions.Contains(maze.region)) {
-                    regions.Add(maze.region);
-                }
-            }
-
-            foreach(Room room in connectedRooms) {
-                if(!regions.Contains(room.region)) {
-                    regions.Add(room.region);
+            foreach(Region region in connectedRegions) {
+                if(!regions.Contains(region.region)) {
+                    regions.Add(region.region);
                 }
             }
 
             return regions.Count == 1;
+        }
+
+        public bool DoesConnectorUnifyTheseRegions(List<Region> _regions) {
+            int matches = 0;
+            foreach(Region region in _regions) {
+                if(connectedRegions.Contains(region)) {
+                    matches++;
+                }
+            }
+
+            return matches == connectedRegions.Count;
         }
     }
 }
