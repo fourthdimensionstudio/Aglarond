@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
 namespace FourthDimension.Dungeon {
-    public class RoomBoundaries {
+    public class RoomBoundaries : Region {
         public Vector2 topLeft;
         public Vector2 topRight;
         public Vector2 bottomLeft;
         public Vector2 bottomRight;
 
-        public RoomBoundaries(Vector2 _topLeft, Vector2 _topRight, Vector2 _bottomLeft, Vector2 _bottomRight) {
+        public RoomBoundaries(Vector2 _topLeft, Vector2 _topRight, Vector2 _bottomLeft, Vector2 _bottomRight) : base(-1) {
             topLeft = _topLeft;
             topRight = _topRight;
             bottomLeft = _bottomLeft;

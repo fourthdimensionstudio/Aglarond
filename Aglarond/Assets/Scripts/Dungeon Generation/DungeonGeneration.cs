@@ -23,7 +23,7 @@ namespace FourthDimension.Dungeon {
         private const int km_stageHeight = 40;
 
         private const int km_attemptsToPlaceRoom = 200;
-        private const float km_extraConnectorChance = 20;
+        private const float km_extraConnectorChance = .01f;
         private const int km_roomExtraSize = 2;
         private const int km_minRoomSize = 3;
         private const int km_maxRoomSize = 6;
@@ -32,6 +32,8 @@ namespace FourthDimension.Dungeon {
 
         private List<Room> m_rooms;
         private List<Maze> m_mazes;
+        private List<Connector> m_connectors;
+
         private int m_currentRegion = -1;
 
         private List<Vector3Int> m_cardinalMoves = new List<Vector3Int> {
@@ -62,6 +64,7 @@ namespace FourthDimension.Dungeon {
         private void Start() {
             m_rooms = new List<Room>();
             m_mazes = new List<Maze>();
+            m_connectors = new List<Connector>();
 
             GenerateDungeon();
         }
@@ -70,6 +73,7 @@ namespace FourthDimension.Dungeon {
             AddRooms();
             AddMaze();
             CreateConnections();
+            CleanDeadEnds();
         }
 
         #region ROOM GENERATION
@@ -254,31 +258,30 @@ namespace FourthDimension.Dungeon {
          *      2. Tile is adjacent to two regions of different colors
          */
         private void CreateConnections() {
-            List<Vector3Int> possibleConnectorsPositions = new List<Vector3Int>();
-
             for(int x = 0; x < carvedRooms.size.x; x++) {
                 for(int y = 0; y < carvedRooms.size.y; y++) {
                     Vector3Int positionToInvestigate = new Vector3Int(x, y, 0);
                     if(carvedRooms.GetTile(positionToInvestigate) == null) {
                         // It is null, it might be a possible connections.
                         // For it to be a connection it has to be adjacent to two different regions
-                        
-                        if(IsAdjacentToTwoDifferentRegions(positionToInvestigate)) {
-                            possibleConnectorsPositions.Add(positionToInvestigate);
-                        }
+                        VerifyConnectivity(positionToInvestigate);
                     }
                 }
             }
 
             // Here we should have all our possible connectors.
-            Debug.Log($"Total Possible Connectors: {possibleConnectorsPositions.Count}");
-            foreach(Vector3Int connector in possibleConnectorsPositions) {
-                carvedRooms.SetTile(connector, possibleConnector);
+            m_connectors.Shuffle();
+            foreach(Connector connector in m_connectors) {
+                if(!connector.AreRegionsConnected() || Random.value < km_extraConnectorChance) {
+                    connector.ConnectAllRegions();
+                    carvedRooms.SetTile(connector.connectorPosition, possibleConnector);
+                }
             }
         }
 
         // TODO Beware this is the main source of inefficiency of the entire generation system
-        private bool IsAdjacentToTwoDifferentRegions(Vector3Int _position) {
+        private void VerifyConnectivity(Vector3Int _position) {
+            Connector connectorBeingCreated = new Connector(_position);
             List<int> adjacentRegions = new List<int>();
 
             foreach(Vector3Int move in m_cardinalMoves) {
@@ -290,6 +293,7 @@ namespace FourthDimension.Dungeon {
                         foreach(Room room in m_rooms) {
                             if(room.IsPositionWithinTheRoom(positionToBeVerified)) {
                                 if(!adjacentRegions.Contains(room.region)) {
+                                    connectorBeingCreated.AddConnectedRegion(room);
                                     adjacentRegions.Add(room.region);
                                     break;
                                 }
@@ -299,6 +303,7 @@ namespace FourthDimension.Dungeon {
                         foreach(Maze maze in m_mazes) {
                             if(maze.IsPositionWithinMaze(positionToBeVerified)) {
                                 if(!adjacentRegions.Contains(maze.region)) {
+                                    connectorBeingCreated.AddConnectedRegion(maze);
                                     adjacentRegions.Add(maze.region);
                                     break;
                                 }
@@ -308,12 +313,66 @@ namespace FourthDimension.Dungeon {
                 }
             }
 
-            return (adjacentRegions.Count > 1);
+            if(adjacentRegions.Count > 1) {
+                m_connectors.Add(connectorBeingCreated);
+            }
         }
         #endregion
 
         #region CLEANUP
         // 4. Cleanup dead ends
+        private void CleanDeadEnds() {
+            List<Vector3Int> tilesToClean = new List<Vector3Int>();
+
+            for(int x = 0; x < carvedRooms.size.x; x++) {
+                for(int y = 0; y < carvedRooms.size.y; y++) {
+                    Vector3Int positionBeingVerified = new Vector3Int(x, y, 0);
+                    if(GetAmountOfEmptyNeighbors(positionBeingVerified) == 3) {
+                        tilesToClean.Add(positionBeingVerified);
+                    }
+                }
+            }
+
+            Debug.Log($"Tiles to Clean: {tilesToClean.Count}");
+            foreach (Vector3Int positionToClean in tilesToClean) {
+                CleanTilePosition(positionToClean);
+            }
+        }
+
+        private void CleanTilePosition(Vector3Int _position) {
+            carvedRooms.SetTile(_position, null);
+
+            Vector3Int neighbourToClean = GetNeighbourThatNeedsToBeCleaned(_position);
+            if(neighbourToClean != Vector3Int.zero) {
+                CleanTilePosition(neighbourToClean);
+            }
+        }
+
+        private Vector3Int GetNeighbourThatNeedsToBeCleaned(Vector3Int _position) {
+            Vector3Int neighbour = Vector3Int.zero;
+
+            foreach(Vector3Int move in m_cardinalMoves) {
+                if(carvedRooms.GetTile(_position + move) != null) {
+                    if(GetAmountOfEmptyNeighbors(_position + move) == 3) {
+                        neighbour = _position + move;
+                    }
+                }
+            }
+
+            return neighbour;
+        }
+
+        private int GetAmountOfEmptyNeighbors(Vector3Int _position) {
+            int emptyNeighbors = 0;
+
+            foreach(Vector3Int move in m_cardinalMoves) {
+                if(carvedRooms.GetTile(_position + move) == null) {
+                    emptyNeighbors++;
+                }
+            }
+
+            return emptyNeighbors;
+        }
         #endregion
     }
 }
