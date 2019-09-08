@@ -10,20 +10,26 @@ namespace FourthDimension.Dungeon {
      *      1. 
      */
     public class DungeonGeneration : MonoBehaviour {
-        [Header("Tilemaps")]
+        [Header("Tilemaps for Generation")]
         public Tilemap carvedRooms;
         public Tile solidRock;
         public Tile roomTile;
         public Tile mazeTile;
         public Tile possibleConnector;
 
+        [Header("Definitive Tilemap")]
+        public Tilemap groundTilemap;
+        public Tilemap collisionsTilemap;
+        public Tile groundTile;
+        public Tile wallTile;
+
         //---------------------------------------- Configuration
         // TODO Make a ScriptableObject with the config variables
-        private const int km_stageWidth = 40;
-        private const int km_stageHeight = 40;
+        private const int km_stageWidth = 30;
+        private const int km_stageHeight = 30;
 
         private const int km_attemptsToPlaceRoom = 200;
-        private const float km_extraConnectorChance = .01f;
+        private const float km_extraConnectorChance = .0f;
         private const int km_roomExtraSize = 2;
         private const int km_minRoomSize = 3;
         private const int km_maxRoomSize = 6;
@@ -73,7 +79,9 @@ namespace FourthDimension.Dungeon {
             AddRooms();
             AddMaze();
             CreateConnections();
-            CleanDeadEnds();
+            // CleanDeadEnds();
+            // ValidateDungeon();
+            // GenerateDefinitiveTilemap();
         }
 
         #region ROOM GENERATION
@@ -270,13 +278,23 @@ namespace FourthDimension.Dungeon {
             }
 
             // Here we should have all our possible connectors.
+            // Change This...
+            // Pick a Room
+            // Pick every connector that has that room to connected regions
+            // Choose one connector for every different region being connected
+
+            // TODO This way of connecting is not working, find a new way to connect rooms and keep track of regions better...
+
+            /*
             m_connectors.Shuffle();
             foreach(Connector connector in m_connectors) {
-                if(!connector.AreRegionsConnected() || Random.value < km_extraConnectorChance) {
+                if(!connector.AreRegionsConnected()) {
+                // if(!connector.AreRegionsConnected() || Random.value < km_extraConnectorChance) {
                     connector.ConnectAllRegions();
                     carvedRooms.SetTile(connector.connectorPosition, possibleConnector);
                 }
             }
+            */
         }
 
         // TODO Beware this is the main source of inefficiency of the entire generation system
@@ -316,6 +334,17 @@ namespace FourthDimension.Dungeon {
             if(adjacentRegions.Count > 1) {
                 m_connectors.Add(connectorBeingCreated);
             }
+        }
+
+        private bool HaveDiagonalConnectivity(Vector3Int _position) {
+            foreach(Vector3Int move in m_diagonalMoves) {
+                Vector3Int positionToCheck = _position + move;
+                if(carvedRooms.GetTile(positionToCheck) != null) {
+                    return true;
+                }
+            }
+
+            return false;
         }
         #endregion
 
@@ -372,6 +401,54 @@ namespace FourthDimension.Dungeon {
             }
 
             return emptyNeighbors;
+        }
+        #endregion
+
+        #region VALIDATE
+        /// <summary>
+        /// Validating the dungeon using a simple flood fill algorithm
+        /// </summary>
+        private void ValidateDungeon() {
+            Debug.Log("Validating with Flood Fill");
+            Room startingRoom = m_rooms.RandomOrDefault();
+            Vector3Int startingPoint = new Vector3Int((int)startingRoom.roomPosition.x, (int)startingRoom.roomPosition.y, 0);
+
+            Stack<Vector3Int> nodesToVisit = new Stack<Vector3Int>();
+            List<Vector3Int> nodesVisited = new List<Vector3Int>();
+
+            nodesToVisit.Push(startingPoint);
+
+            do {
+                Vector3Int currentPoint = nodesToVisit.Pop();
+                nodesVisited.Add(currentPoint);
+                // TODO Change to Ground tile
+                carvedRooms.SetTile(currentPoint, roomTile);
+
+                foreach(Vector3Int movement in m_cardinalMoves) {
+                    Vector3Int tileToVisit = currentPoint + movement;
+
+                    if(carvedRooms.GetTile(tileToVisit) != null && !nodesVisited.Contains(tileToVisit)) {
+                        nodesToVisit.Push(tileToVisit);
+                    }
+                }
+            } while (nodesToVisit.Count > 0);
+        }
+        #endregion
+
+        #region GENERATING TILEMAPS
+        private void GenerateDefinitiveTilemap() {
+            for(int x = -1; x < carvedRooms.size.x + 1; x++) {
+                for(int y = -1; y < carvedRooms.size.y + 1; y++) {
+                    if(carvedRooms.GetTile(new Vector3Int(x, y, 0)) == null) {
+                        collisionsTilemap.SetTile(new Vector3Int(x, y, 0), wallTile);
+                    } else {
+                        groundTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
+                    }
+                }
+            }
+
+            carvedRooms.ClearAllTiles();
+            Destroy(carvedRooms.gameObject);
         }
         #endregion
     }
