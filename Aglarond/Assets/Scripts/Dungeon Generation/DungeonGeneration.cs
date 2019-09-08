@@ -273,7 +273,7 @@ namespace FourthDimension.Dungeon {
             // Here we should have all our possible connectors.
             Debug.Log($"Total Possible Connectors: {possibleConnectorsPositions.Count}");
             foreach(Vector3Int connector in possibleConnectorsPositions) {
-                // carvedRooms.SetTile(connector, possibleConnector);
+                carvedRooms.SetTile(connector, possibleConnector);
             }
         }
 
@@ -306,11 +306,6 @@ namespace FourthDimension.Dungeon {
                         }
                     }
                 }
-            }
-
-            if(adjacentRegions.Count == 1) {
-                Debug.Log("Carving position with  1 adjacent region");
-                carvedRooms.SetTile(_position, possibleConnector);
             }
 
             return (adjacentRegions.Count > 1);
