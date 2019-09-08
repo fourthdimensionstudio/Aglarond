@@ -279,6 +279,7 @@ namespace FourthDimension.Dungeon {
         #endregion
 
         #region CREATING CONNECTIONS
+        // TODO This is very bad, do it better.
         // TODO some very poorly optimized code below, beware!
         /*
          * Rules for creating the connections:
@@ -292,8 +293,6 @@ namespace FourthDimension.Dungeon {
                 for(int y = 0; y < carvedRooms.size.y; y++) {
                     Vector3Int positionToInvestigate = new Vector3Int(x, y, 0);
                     if(carvedRooms.GetTile(positionToInvestigate) == null) {
-                        // If it is null, it might be a possible connections.
-                        // For it to be a connection it has to be adjacent to two different regions
                         VerifyConnectivity(positionToInvestigate);
                     }
                 }
