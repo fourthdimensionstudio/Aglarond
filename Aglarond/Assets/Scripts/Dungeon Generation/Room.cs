@@ -15,7 +15,7 @@ namespace FourthDimension.Dungeon {
         }
     }
 
-    public class Room : Region {
+    public class Room : RegionUnit {
         /// <summary>
         /// Room Position is the bottom left position of the room
         /// </summary>
@@ -24,7 +24,7 @@ namespace FourthDimension.Dungeon {
         public int height;
         public RoomBoundaries roomBoundaries;
 
-        public Room(Vector2 _roomPosition, int _width, int _height) : base(-1) {
+        public Room(Vector2 _roomPosition, int _width, int _height) : base(ERegionType.Room) {
             roomPosition = _roomPosition;
             width = _width;
             height = _height;
@@ -66,7 +66,7 @@ namespace FourthDimension.Dungeon {
         /// </summary>
         /// <param name="_position">position to verified</param>
         /// <returns>whether or not the position is within the room</returns>
-        public bool IsPositionWithinTheRoom(Vector3Int _position) {
+        public override bool IsPositionWithinRegionUnit(Vector3Int _position) {
             return (_position.x >= roomBoundaries.bottomLeft.x && _position.x <= roomBoundaries.bottomRight.x && _position.y <= roomBoundaries.topLeft.y && _position.y >= roomBoundaries.bottomLeft.y);
         }
     }

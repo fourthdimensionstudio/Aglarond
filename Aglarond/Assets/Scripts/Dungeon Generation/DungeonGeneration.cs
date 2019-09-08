@@ -31,14 +31,16 @@ namespace FourthDimension.Dungeon {
         private const int km_attemptsToPlaceRoom = 200;
         private const float km_extraConnectorChance = .0f;
         private const int km_roomExtraSize = 2;
-        private const int km_minRoomSize = 3;
-        private const int km_maxRoomSize = 6;
+        private const int km_minRoomSize = 5;
+        private const int km_maxRoomSize = 9;
         private const int km_amountAlloweedToExceedTilemap = 0;
         // -----------------------------------------------------
 
         private List<Room> m_rooms;
         private List<Maze> m_mazes;
+        private List<RegionUnit> m_roomsAndMazes;
         private List<Connector> m_connectors;
+        private List<Region> m_regions;
 
         private int m_currentRegion = -1;
 
@@ -70,22 +72,33 @@ namespace FourthDimension.Dungeon {
         private void Start() {
             m_rooms = new List<Room>();
             m_mazes = new List<Maze>();
+            m_roomsAndMazes = new List<RegionUnit>();
             m_connectors = new List<Connector>();
+            m_regions = new List<Region>();
 
             GenerateDungeon();
         }
 
         private void GenerateDungeon() {
-            AddRooms();
-            AddMaze();
+            // I'm happy with this
+            CreateRooms();
+            // I'm happy with this
+            CreatePathways();
+
+
+            // I'm NOT happy with this
             CreateConnections();
-            // CleanDeadEnds();
-            // ValidateDungeon();
-            // GenerateDefinitiveTilemap();
+
+            // I'm happy with this
+            CleanDeadEnds();
+            // I'm happy with this
+            ValidateDungeon();
+            // I'm happy with this
+            GenerateDefinitiveTilemap();
         }
 
         #region ROOM GENERATION
-        private void AddRooms() {
+        private void CreateRooms() {
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 // 1. Pick a random room size
                 Vector2 roomPosition = new Vector2(Random.Range(0, km_stageWidth), Random.Range(0, km_stageHeight));
@@ -114,8 +127,13 @@ namespace FourthDimension.Dungeon {
                     continue;
                 }
 
-                roomToAdd.region = ++m_currentRegion;
                 m_rooms.Add(roomToAdd);
+                m_roomsAndMazes.Add(roomToAdd);
+
+                // Creating a new region for this room
+                Region newRegion = new Region(++m_currentRegion);
+                newRegion.AddRegionUnitToRegion(roomToAdd);
+                m_regions.Add(newRegion);
                 CarveRoom(roomToAdd);
             }
 
@@ -132,7 +150,7 @@ namespace FourthDimension.Dungeon {
         #endregion
 
         #region MAZE GENERATION
-        private void AddMaze() {
+        private void CreatePathways() {
             int tilemapWidth = carvedRooms.size.x;
             int tilemapHeight = carvedRooms.size.y;
             Vector3Int startingPoint;
@@ -148,7 +166,7 @@ namespace FourthDimension.Dungeon {
         }
 
         private void StartMazeOnPoint(Vector3Int _point) {
-            Maze mazeBeingCreated = new Maze(_point, ++m_currentRegion);
+            Maze mazeBeingCreated = new Maze(_point);
 
             int tilemapWidth = carvedRooms.size.x;
             int tilemapHeight = carvedRooms.size.y;
@@ -196,7 +214,7 @@ namespace FourthDimension.Dungeon {
 
                 if (possibleMoves.Count == 0) {
                     if (visitedPositions.Count == 0) {
-                        Debug.Log($"Left Organically");
+                        // Debug.Log($"Left Organically");
                         reachedEnd = true;
                     } else {
                         currentPoint = visitedPositions.Pop();
@@ -205,6 +223,12 @@ namespace FourthDimension.Dungeon {
             }
 
             m_mazes.Add(mazeBeingCreated);
+            m_roomsAndMazes.Add(mazeBeingCreated);
+
+            // Creating new region for the maze
+            Region newRegion = new Region(++m_currentRegion);
+            newRegion.AddRegionUnitToRegion(mazeBeingCreated);
+            m_regions.Add(newRegion);
         }
 
         /// <summary>
@@ -255,7 +279,6 @@ namespace FourthDimension.Dungeon {
         #endregion
 
         #region CREATING CONNECTIONS
-        // 3. Make the Connections
         // TODO some very poorly optimized code below, beware!
         /*
          * Rules for creating the connections:
@@ -263,7 +286,9 @@ namespace FourthDimension.Dungeon {
          *      2. Tile is adjacent to two regions of different colors
          */
         private void CreateConnections() {
-            for(int x = 0; x < carvedRooms.size.x; x++) {
+            Debug.Log($"{m_regions.Count} regions to check");
+
+            for (int x = 0; x < carvedRooms.size.x; x++) {
                 for(int y = 0; y < carvedRooms.size.y; y++) {
                     Vector3Int positionToInvestigate = new Vector3Int(x, y, 0);
                     if(carvedRooms.GetTile(positionToInvestigate) == null) {
@@ -276,34 +301,50 @@ namespace FourthDimension.Dungeon {
 
             // DEBUGGING Printing all possible Connectors...
             /*
-            foreach(Connector connector in m_connectors) {
+            Debug.Log($"We have {m_connectors.Count} connectors");
+            foreach (Connector connector in m_connectors) {
                 carvedRooms.SetTile(connector.connectorPosition, possibleConnector);
             }
             */
 
+            // Now it's time to unify the region
+            // What we have here:
+            //     1. Connectors that can unify 2 regions
+            //     2. Regions that contains all RegionUnits pertaining to its Region
             m_connectors.Shuffle();
             List<Connector> possibleConnectors = m_connectors;
+            List<Connector> consolidatedConnectors = new List<Connector>();
             List<Connector> removedConnectors = new List<Connector>();
+
             do {
                 Connector chosenConnector = possibleConnectors[0];
                 possibleConnectors.RemoveAt(0);
-                chosenConnector.ConnectAllRegions();
-                carvedRooms.SetTile(chosenConnector.connectorPosition, possibleConnector);
+                consolidatedConnectors.Add(chosenConnector);
 
                 // Removing from the possible connectors all connectors that unify the same regions
-                for(int i = 0; i < possibleConnectors.Count; i++) {
-                    if(possibleConnectors[i].DoesConnectorUnifyTheseRegions(chosenConnector.connectedRegions)) {
+                for (int i = 0; i < possibleConnectors.Count; i++) {
+                    if (possibleConnectors[i].DoesConnectorUnifyTheseRegions(chosenConnector.connectedRegions)) {
                         removedConnectors.Add(possibleConnectors[i]);
                         possibleConnectors.RemoveAt(i);
                         i--;
                     }
                 }
-            } while (possibleConnectors.Count > 0);
 
-            Debug.Log($"Removed Connectors: {removedConnectors.Count}");
+                carvedRooms.SetTile(chosenConnector.connectorPosition, possibleConnector);
+                chosenConnector.UnifyRegions();
+
+                // Removing all Invalidated Regions from m_regions
+                for(int i = 0; i < m_regions.Count; i++) {
+                    if(m_regions[i].regionNumber == -1) {
+                        m_regions.RemoveAt(i);
+                        i--;
+                    }
+                }
+            } while (possibleConnectors.Count > 0);
         }
 
         // TODO Beware this is the main source of inefficiency of the entire generation system
+        // An important thing to know here is that when this functions starts every region has either 1 room or 1 maze, no unification happened yet.
         private void VerifyConnectivity(Vector3Int _position) {
             Connector connectorBeingCreated = new Connector(_position);
             List<int> adjacentRegions = new List<int>();
@@ -312,24 +353,15 @@ namespace FourthDimension.Dungeon {
                 Vector3Int positionToBeVerified = _position + move;
                 TileBase adjacentTile = carvedRooms.GetTile(positionToBeVerified);
 
-                if (adjacentTile != null) {
-                    if(adjacentTile == roomTile) {
-                        foreach(Room room in m_rooms) {
-                            if(room.IsPositionWithinTheRoom(positionToBeVerified)) {
-                                if(!adjacentRegions.Contains(room.region)) {
-                                    connectorBeingCreated.AddConnectedRegion(room);
-                                    adjacentRegions.Add(room.region);
-                                    break;
-                                }
-                            }
-                        }
-                    } else if(adjacentTile == mazeTile) {
-                        foreach(Maze maze in m_mazes) {
-                            if(maze.IsPositionWithinMaze(positionToBeVerified)) {
-                                if(!adjacentRegions.Contains(maze.region)) {
-                                    connectorBeingCreated.AddConnectedRegion(maze);
-                                    adjacentRegions.Add(maze.region);
-                                    break;
+                if(adjacentTile != null) {
+                    foreach(RegionUnit regionUnit in m_roomsAndMazes) {
+                        if(regionUnit.IsPositionWithinRegionUnit(positionToBeVerified)) {
+                            foreach(Region region in m_regions) {
+                                if(region.IsThisUnitOnThisRegion(regionUnit)) {
+                                    if(!adjacentRegions.Contains(region.regionNumber)) {
+                                        connectorBeingCreated.AddConnectedRegion(region);
+                                        adjacentRegions.Add(region.regionNumber);
+                                    }
                                 }
                             }
                         }
@@ -367,7 +399,7 @@ namespace FourthDimension.Dungeon {
                 }
             }
 
-            Debug.Log($"Tiles to Clean: {tilesToClean.Count}");
+            // Debug.Log($"Tiles to Clean: {tilesToClean.Count}");
             foreach (Vector3Int positionToClean in tilesToClean) {
                 CleanTilePosition(positionToClean);
             }

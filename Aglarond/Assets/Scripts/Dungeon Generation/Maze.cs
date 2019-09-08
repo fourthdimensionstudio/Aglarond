@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace FourthDimension.Dungeon {
-    public class Maze : Region  {
+    public class Maze : RegionUnit  {
         public Vector3Int startingPoint;
         public List<Vector3Int> mazePoints;
 
-        public Maze(Vector3Int _startingPoint, int _region) : base(_region) {
+        public Maze(Vector3Int _startingPoint) : base(ERegionType.Maze) {
             startingPoint = _startingPoint;
             mazePoints = new List<Vector3Int>();
             mazePoints.Add(_startingPoint);
         }
 
-        public bool IsPositionWithinMaze(Vector3Int _position) {
+        public override bool IsPositionWithinRegionUnit(Vector3Int _position) {
             return mazePoints.Contains(_position);
         }
     }

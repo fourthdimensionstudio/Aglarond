@@ -6,45 +6,35 @@ namespace FourthDimension.Dungeon {
     public class Connector {
         public Vector3Int connectorPosition;
         public List<Region> connectedRegions;
-        public List<int> connectedRegionsNumbers;
 
         public Connector(Vector3Int _connectorPosition) {
             connectorPosition = _connectorPosition;
             connectedRegions = new List<Region>();
-            connectedRegionsNumbers = new List<int>();
         }
 
         public void AddConnectedRegion(Region _region) {
             connectedRegions.Add(_region);
-            connectedRegionsNumbers.Add(_region.region);
         }
 
-        public void ConnectAllRegions() {
+        public void UnifyRegions() {
             int lowestRegion = int.MaxValue;
 
-            // Getting Lowest Region Value
+            // Finding Lowest region number
             foreach(Region region in connectedRegions) {
-                if(region.region < lowestRegion) {
-                    lowestRegion = region.region;
+                if(region.regionNumber < lowestRegion) {
+                    lowestRegion = region.regionNumber;
                 }
             }
 
-            // Assigning Them
+            // Assigning Lowest Region Number
             foreach(Region region in connectedRegions) {
-                region.region = lowestRegion;
-            }
-        }
-
-        public bool AreRegionsConnected() {
-            List<int> regions = new List<int>();
-
-            foreach(Region region in connectedRegions) {
-                if(!regions.Contains(region.region)) {
-                    regions.Add(region.region);
-                }
+                region.regionNumber = lowestRegion;
             }
 
-            return regions.Count == 1;
+            // Now we choose the first region and add all the region units to it while invalidating all other regions
+            for(int i = 1; i < connectedRegions.Count; i++) {
+                connectedRegions[0].IncorporateRegion(connectedRegions[i]);
+            }
         }
 
         public bool DoesConnectorUnifyTheseRegions(List<Region> _regions) {
