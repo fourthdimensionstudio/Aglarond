@@ -25,14 +25,14 @@ namespace FourthDimension.Dungeon {
 
         //---------------------------------------- Configuration
         // TODO Make a ScriptableObject with the config variables
-        private const int km_stageWidth = 30;
-        private const int km_stageHeight = 30;
+        private const int km_stageWidth = 40;
+        private const int km_stageHeight = 40;
 
-        private const int km_attemptsToPlaceRoom = 200;
+        private const int km_attemptsToPlaceRoom = 300;
         private const float km_extraConnectorChance = .0f;
         private const int km_roomExtraSize = 2;
-        private const int km_minRoomSize = 5;
-        private const int km_maxRoomSize = 9;
+        private const int km_minRoomSize = 8;
+        private const int km_maxRoomSize = 12;
         private const int km_amountAlloweedToExceedTilemap = 0;
         // -----------------------------------------------------
 
@@ -69,7 +69,7 @@ namespace FourthDimension.Dungeon {
             Vector3Int.down + Vector3Int.left
         };
 
-        private void Start() {
+        private void Awake() {
             m_rooms = new List<Room>();
             m_mazes = new List<Maze>();
             m_roomsAndMazes = new List<RegionUnit>();
@@ -487,5 +487,10 @@ namespace FourthDimension.Dungeon {
             Destroy(carvedRooms.gameObject);
         }
         #endregion
+
+        // ...
+        public Vector3 GetStartingPosition() {
+            return m_rooms.RandomOrDefault().GetRoomCenter();
+        }
     }
 }

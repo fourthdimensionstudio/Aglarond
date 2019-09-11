@@ -10,6 +10,11 @@ namespace FourthDimension.TurnBased.Actor {
         private Input.EMovementDirection m_currentMovementDirection;
 
         private void Awake() {
+            // DEBUGGING
+            // InitializeHero();
+        }
+
+        public void InitializeHero() {
             // TODO Mobile Input
             m_playerInputSystem = new Input.AxisInput();
             InitializeActor(EActorType.Player);

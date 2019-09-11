@@ -69,5 +69,9 @@ namespace FourthDimension.Dungeon {
         public override bool IsPositionWithinRegionUnit(Vector3Int _position) {
             return (_position.x >= roomBoundaries.bottomLeft.x && _position.x <= roomBoundaries.bottomRight.x && _position.y <= roomBoundaries.topLeft.y && _position.y >= roomBoundaries.bottomLeft.y);
         }
+
+        public Vector2 GetRoomCenter() {
+            return new Vector2(roomPosition.x + width/2, roomPosition.y + height/2);
+        }
     }
 }
