@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2583590186939138798}
   - component: {fileID: 2583590186939138799}
+  - component: {fileID: 1393186641}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   actorStat: {fileID: 11400000, guid: 2b7d6f3388494ed4db84a67346e28bed, type: 2}
   movementBlockedLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   triggersLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -78,6 +79,19 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 24fb20f673d974fc5b527c0aa31ffe56, type: 3}
   - {fileID: 8300000, guid: 7a0123116d83543a7a648de5b9b03701, type: 3}
   - {fileID: 8300000, guid: 792ba8886f9674573a6ed7e2ccbe29fa, type: 3}
+--- !u!114 &1393186641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2583590186939138797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e9b0d933da520041a72108ee82ef8ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 5
 --- !u!1 &2583590187203433488
 GameObject:
   m_ObjectHideFlags: 0

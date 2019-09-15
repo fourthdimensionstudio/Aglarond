@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Square
+  m_Script: {fileID: 11500000, guid: 65f791726cc6f4344bf4aeeee59426b2, type: 3}
+  m_Name: WallTile
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: db5b5d184ee6e1849bc306e8e2d8c246, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
     e01: 0
@@ -34,3 +34,8 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
+  visibleSprite: {fileID: 9025884657007145674, guid: 37fd4ebc828243e49b33761941550332,
+    type: 3}
+  notVisibleSprite: {fileID: 1720441148300283431, guid: 37fd4ebc828243e49b33761941550332,
+    type: 3}
+  isVisible: 1

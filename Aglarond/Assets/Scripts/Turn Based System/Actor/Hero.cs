@@ -5,9 +5,9 @@ using UnityEngine;
 namespace FourthDimension.TurnBased.Actor {
     public class Hero : DynamicActorComponent {
         // TODO movement denied clip
-
         private Input.BaseInput m_playerInputSystem;
         private Input.EMovementDirection m_currentMovementDirection;
+        private Roguelike.FieldOfView m_fieldOfView;
 
         private void Awake() {
             // DEBUGGING
@@ -17,11 +17,14 @@ namespace FourthDimension.TurnBased.Actor {
         public void InitializeHero() {
             // TODO Mobile Input
             m_playerInputSystem = new Input.AxisInput();
+            m_fieldOfView = GetComponent<Roguelike.FieldOfView>();
             InitializeActor(EActorType.Player);
 
             onActorAttacked += (() => {
                 ShakeScreen(.5f);
             });
+
+            m_fieldOfView.InitializeFieldOfView(m_currentPosition);
         }
 
         private void Update() {
@@ -34,6 +37,7 @@ namespace FourthDimension.TurnBased.Actor {
             }
 
             Move(m_currentMovementDirection);
+            m_fieldOfView.InitializeFieldOfView(m_currentPosition);
             return true;
         }
     }
