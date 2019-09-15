@@ -467,7 +467,7 @@ PrefabInstance:
     - target: {fileID: 2583590186939138798, guid: 7ba4854241a5ddc4dad64e87da2a8c22,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2583590186939138798, guid: 7ba4854241a5ddc4dad64e87da2a8c22,
         type: 3}
@@ -484,38 +484,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2583590187203433489, guid: 7ba4854241a5ddc4dad64e87da2a8c22,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2583590187203433490, guid: 7ba4854241a5ddc4dad64e87da2a8c22,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 1337135937646635300, guid: 37fd4ebc828243e49b33761941550332,
-        type: 3}
     - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
       propertyPath: fieldOfViewTilemap
       value: 
       objectReference: {fileID: 1989961950}
     - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: fieldOfViewTile
+      propertyPath: dungeonTilemap
       value: 
-      objectReference: {fileID: 11400000, guid: 26109f1c37274044a86a31c3dc61fe51,
-        type: 2}
-    - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: maxDistance
-      value: 5
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1119116610}
     - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
       propertyPath: collisionTilemap
       value: 
       objectReference: {fileID: 1211826478}
-    - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: dungeonTilemap
-      value: 
-      objectReference: {fileID: 1119116610}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
 --- !u!1001 &1637928470
@@ -741,5 +721,5 @@ Transform:
   - {fileID: 762528619}
   - {fileID: 906669700}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

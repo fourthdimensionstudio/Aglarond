@@ -19,6 +19,8 @@ namespace UnityEngine.Tilemaps {
         }
 
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData) {
+            base.GetTileData(position, tilemap, ref tileData);
+
             if(isVisible) {
                 tileData.sprite = this.visibleSprite;
             } else {

@@ -156,7 +156,8 @@ namespace FourthDimension.Roguelike {
 
                     if (fullShadow) {
                         // Tile is not visible
-                        // currentTile.isVisible = false;
+                        // TODO
+                        currentTile.isVisible = false;
                         fieldOfViewTilemap.SetTile(position, fieldOfViewTile);
                     } else {
                         Shadow projection = ProjectTile(row, col);
@@ -164,7 +165,8 @@ namespace FourthDimension.Roguelike {
                         if(!isVisible) {
                             fieldOfViewTilemap.SetTile(position, fieldOfViewTile);
                         }
-                        // currentTile.isVisible = isVisible;
+                        // TODO
+                        currentTile.isVisible = isVisible;
 
                         if(isVisible && collisionTilemap.GetTile(position) != null) {
                             shadowLine.AddShadowToLine(projection);
@@ -174,6 +176,9 @@ namespace FourthDimension.Roguelike {
                     
                 }
             }
+
+            dungeonTilemap.RefreshAllTiles();
+            collisionTilemap.RefreshAllTiles();
         }
 
         private Vector3Int CalculatePositionInOctant(int _row, int _col, int _octant) {
