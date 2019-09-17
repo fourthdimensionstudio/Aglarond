@@ -10,18 +10,20 @@ namespace FourthDimension.Dungeon {
      *      1. 
      */
     public class DungeonGeneration : MonoBehaviour {
-        [Header("Tilemaps for Generation")]
+        [Header("Tilemaps for Debugging Generation")]
         public Tilemap carvedRooms;
         public Tile solidRock;
         public Tile roomTile;
         public Tile mazeTile;
         public Tile possibleConnector;
 
-        [Header("Definitive Tilemap")]
-        public Tilemap groundTilemap;
-        public Tilemap collisionsTilemap;
-        public Tile groundTile;
-        public Tile wallTile;
+        [Header("GameObjects for Tilemap")]
+        public GameObject groundGameObjectTile;
+        public GameObject wallGameObjectTile;
+
+        [Header("Organization")]
+        public Transform groundTilesParent;
+        public Transform wallTilesParent;
 
         //---------------------------------------- Configuration
         // TODO Make a ScriptableObject with the config variables
@@ -41,6 +43,7 @@ namespace FourthDimension.Dungeon {
         private List<RegionUnit> m_roomsAndMazes;
         private List<Connector> m_connectors;
         private List<Region> m_regions;
+        private DungeonTile[,] m_dungeonTiles;
 
         private int m_currentRegion = -1;
 
@@ -473,18 +476,42 @@ namespace FourthDimension.Dungeon {
 
         #region GENERATING TILEMAPS
         private void GenerateDefinitiveTilemap() {
-            for(int x = -1; x < carvedRooms.size.x + 1; x++) {
-                for(int y = -1; y < carvedRooms.size.y + 1; y++) {
+
+            m_dungeonTiles = new DungeonTile[carvedRooms.size.x, carvedRooms.size.y];
+
+            for(int x = 0; x < carvedRooms.size.x; x++) {
+                for(int y = 0; y < carvedRooms.size.y; y++) {
+                    DungeonTile dungeonTile;
                     if(carvedRooms.GetTile(new Vector3Int(x, y, 0)) == null) {
-                        collisionsTilemap.SetTile(new Vector3Int(x, y, 0), wallTile);
+                        dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(wallTilesParent);
+                        dungeonTile.InitializeTile(true);
                     } else {
-                        groundTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
+                        dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(groundTilesParent);
+                        dungeonTile.InitializeTile();
                     }
+
+                    m_dungeonTiles[x, y] = dungeonTile;
+                    
                 }
             }
 
-            carvedRooms.ClearAllTiles();
             Destroy(carvedRooms.gameObject);
+        }
+        #endregion
+
+        #region Handling
+        public DungeonTile GetTile(int x, int y) {
+            if(x > 0 && x < m_dungeonTiles.GetLength(0) && y > 0 && y < m_dungeonTiles.GetLength(1)) {
+                return m_dungeonTiles[x, y];
+            }
+
+            return null;
+        }
+
+        public int GetDungeonSize(int dimension) {
+            return m_dungeonTiles.GetLength(dimension);
         }
         #endregion
 

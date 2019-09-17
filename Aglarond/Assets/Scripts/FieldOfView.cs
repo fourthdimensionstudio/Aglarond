@@ -99,22 +99,20 @@ namespace FourthDimension.Roguelike {
     }
 
     public class FieldOfView : MonoBehaviour {
-        [Header("TEMP for Debug")]
-        public Tilemap fieldOfViewTilemap;
-        public Tile fieldOfViewTile;
-
-        public Tilemap dungeonTilemap;
-        public Tilemap collisionTilemap;
         [Header("Field of View")]
         public int maxDistance = 5;
+
+        private Dungeon.DungeonGeneration m_dungeonGeneration;
+
+        private void Awake() {
+            m_dungeonGeneration = FindObjectOfType<Dungeon.DungeonGeneration>();
+        }
 
         public void InitializeFieldOfView(Vector2 _position) {
             RefreshVisibility(new Vector3Int((int)_position.x, (int)_position.y, 0));
         }
 
         private void RefreshVisibility(Vector3Int _originPosition) {
-            fieldOfViewTilemap.ClearAllTiles();
-
             for(int octant = 0; octant < 8; octant++) {
                 RefreshOctant(_originPosition, octant);
             }
@@ -124,61 +122,48 @@ namespace FourthDimension.Roguelike {
             ShadowLine shadowLine = new ShadowLine();
             bool fullShadow = false;
 
-            for(int row = 2; row < 3; row++) {
+            for(int row = 1; row < 20; row++) {
                 // TODO should stop once we go out of bounds.
                 Vector3Int position = _originPosition + CalculatePositionInOctant(row, 0, octant);
 
-                /*
-                if(position.y + row >= dungeonTilemap.size.y || position.y + row < 0) {
+                if(position.y + row >= m_dungeonGeneration.GetDungeonSize(1) || position.y + row < 0) {
                     break;
                 }
-                */
 
                 for(int col = 0; col <= row; col++) {
                     position = _originPosition + CalculatePositionInOctant(row, col, octant);
-                    RoguelikeTile currentTile = dungeonTilemap.GetTile(position) as RoguelikeTile;
-
-                    // TODO this is bad
-                    if (currentTile == null) {
-                        currentTile = collisionTilemap.GetTile(position) as RoguelikeTile;
-                    }
+                    Dungeon.DungeonTile currentTile = m_dungeonGeneration.GetTile(position.x, position.y);
 
                     if(currentTile == null) {
                         continue;
                     }
 
                     // If we went out of bounds, bail on this row
-                    /*
-                    if (position.x + col >= dungeonTilemap.size.x || position.x + col < 0) {
-                        return;
+                    if (position.x + col >= m_dungeonGeneration.GetDungeonSize(0) || position.x + col < 0) {
+                        break;
                     }
-                    */
 
                     if (fullShadow) {
                         // Tile is not visible
-                        // TODO
-                        currentTile.isVisible = false;
-                        fieldOfViewTilemap.SetTile(position, fieldOfViewTile);
+                        currentTile.IsVisible = false;
                     } else {
                         Shadow projection = ProjectTile(row, col);
                         bool isVisible = !shadowLine.IsInShadow(projection);
-                        if(!isVisible) {
-                            fieldOfViewTilemap.SetTile(position, fieldOfViewTile);
-                        }
-                        // TODO
-                        currentTile.isVisible = isVisible;
+                        currentTile.IsVisible = isVisible;
 
-                        if(isVisible && collisionTilemap.GetTile(position) != null) {
+                        if(isVisible) {
+                            currentTile.WasTileDiscovered = true;
+                        }
+
+                        if(isVisible && m_dungeonGeneration.GetTile(position.x, position.y).IsWall) {
                             shadowLine.AddShadowToLine(projection);
                             fullShadow = shadowLine.IsFullShadow;
                         }
                     }
-                    
+
+                    currentTile.UpdateTile();
                 }
             }
-
-            dungeonTilemap.RefreshAllTiles();
-            collisionTilemap.RefreshAllTiles();
         }
 
         private Vector3Int CalculatePositionInOctant(int _row, int _col, int _octant) {
