@@ -20,6 +20,8 @@ namespace FourthDimension.Dungeon {
         public string partiallyVisibleSpriteMask = "Default";
         public string nonVisibleSpriteMask = "Default";
 
+        private Vector2 m_TilePosition;
+
         private bool m_isTileVisible;
         public bool IsVisible {
             get {
@@ -48,7 +50,8 @@ namespace FourthDimension.Dungeon {
             }
         }
 
-        public void InitializeTile(bool _isWall = false) {
+        public void InitializeTile(Vector2 _tilePosition, bool _isWall = false) {
+            m_TilePosition = _tilePosition;
             m_spriteRenderer = GetComponent<SpriteRenderer>();
             m_isWall = _isWall;
             m_isTileVisible = false;

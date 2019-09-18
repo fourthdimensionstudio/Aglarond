@@ -37,7 +37,7 @@ namespace FourthDimension.TurnBased.Actor {
             }
 
             Move(m_currentMovementDirection);
-            m_fieldOfView.InitializeFieldOfView(m_currentPosition);
+            m_fieldOfView.RefreshVisibility(m_currentPosition);
             return true;
         }
     }

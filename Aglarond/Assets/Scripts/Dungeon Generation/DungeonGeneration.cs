@@ -88,7 +88,6 @@ namespace FourthDimension.Dungeon {
             // I'm happy with this
             CreatePathways();
 
-
             // I'm NOT happy with this
             CreateConnections();
 
@@ -485,11 +484,11 @@ namespace FourthDimension.Dungeon {
                     if(carvedRooms.GetTile(new Vector3Int(x, y, 0)) == null) {
                         dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(wallTilesParent);
-                        dungeonTile.InitializeTile(true);
+                        dungeonTile.InitializeTile(new Vector2(x,y), true);
                     } else {
                         dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
-                        dungeonTile.InitializeTile();
+                        dungeonTile.InitializeTile(new Vector2(x,y));
                     }
 
                     m_dungeonTiles[x, y] = dungeonTile;
@@ -503,15 +502,15 @@ namespace FourthDimension.Dungeon {
 
         #region Handling
         public DungeonTile GetTile(int x, int y) {
-            if(x > 0 && x < m_dungeonTiles.GetLength(0) && y > 0 && y < m_dungeonTiles.GetLength(1)) {
+            if(x >= 0 && x < m_dungeonTiles.GetLength(0) && y >= 0 && y < m_dungeonTiles.GetLength(1)) {
                 return m_dungeonTiles[x, y];
             }
 
             return null;
         }
 
-        public int GetDungeonSize(int dimension) {
-            return m_dungeonTiles.GetLength(dimension);
+        public int GetDungeonSize(int _dimension) {
+            return m_dungeonTiles.GetLength(_dimension);
         }
         #endregion
 

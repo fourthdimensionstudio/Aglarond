@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace FourthDimension.Roguelike {
     public class ShadowLine {
@@ -58,7 +57,7 @@ namespace FourthDimension.Roguelike {
                     previousOverlappedShadow.end = _shadowToAdd.end;
                 } else {
                     // Does not overlap anything, so insert.
-                    m_shadows.Add(_shadowToAdd);
+                    m_shadows.Insert(index, _shadowToAdd);
                 }
             }
         }
@@ -80,10 +79,10 @@ namespace FourthDimension.Roguelike {
     }
 
     public class Shadow {
-        public int start;
-        public int end;
+        public float start;
+        public float end;
 
-        public Shadow(int _start, int _end) {
+        public Shadow(float _start, float _end) {
             start = _start;
             end = _end;
         }
@@ -99,9 +98,7 @@ namespace FourthDimension.Roguelike {
     }
 
     public class FieldOfView : MonoBehaviour {
-        [Header("Field of View")]
-        public int maxDistance = 5;
-
+        private const int km_maxDistance = 13;
         private Dungeon.DungeonGeneration m_dungeonGeneration;
 
         private void Awake() {
@@ -109,55 +106,47 @@ namespace FourthDimension.Roguelike {
         }
 
         public void InitializeFieldOfView(Vector2 _position) {
-            RefreshVisibility(new Vector3Int((int)_position.x, (int)_position.y, 0));
+            m_dungeonGeneration.GetTile((int)_position.x, (int)_position.y).IsVisible = true;
+            m_dungeonGeneration.GetTile((int)_position.x, (int)_position.y).UpdateTile();
+            RefreshVisibility(_position);
         }
 
-        private void RefreshVisibility(Vector3Int _originPosition) {
+        public void RefreshVisibility(Vector2 _originPosition) {
             for(int octant = 0; octant < 8; octant++) {
-                RefreshOctant(_originPosition, octant);
+                RefreshOctant2(_originPosition, octant);
             }
         }
 
-        private void RefreshOctant(Vector3Int _originPosition, int octant) {
-            ShadowLine shadowLine = new ShadowLine();
+        private void RefreshOctant2(Vector2 _originPosition, int _octant) {
+            ShadowLine line = new ShadowLine();
             bool fullShadow = false;
 
-            for(int row = 1; row < 20; row++) {
-                // TODO should stop once we go out of bounds.
-                Vector3Int position = _originPosition + CalculatePositionInOctant(row, 0, octant);
 
-                if(position.y + row >= m_dungeonGeneration.GetDungeonSize(1) || position.y + row < 0) {
-                    break;
-                }
-
+            for(int row = 1; row < km_maxDistance; row++) {
                 for(int col = 0; col <= row; col++) {
-                    position = _originPosition + CalculatePositionInOctant(row, col, octant);
-                    Dungeon.DungeonTile currentTile = m_dungeonGeneration.GetTile(position.x, position.y);
+                    Vector2 position = _originPosition + ConvertPositionToOctantPosition(row, col, _octant);
+                    Dungeon.DungeonTile currentTile = m_dungeonGeneration.GetTile((int)position.x, (int)position.y);
 
                     if(currentTile == null) {
                         continue;
                     }
 
-                    // If we went out of bounds, bail on this row
-                    if (position.x + col >= m_dungeonGeneration.GetDungeonSize(0) || position.x + col < 0) {
-                        break;
-                    }
-
-                    if (fullShadow) {
-                        // Tile is not visible
+                    if(fullShadow && !fullShadow) {
                         currentTile.IsVisible = false;
                     } else {
                         Shadow projection = ProjectTile(row, col);
-                        bool isVisible = !shadowLine.IsInShadow(projection);
-                        currentTile.IsVisible = isVisible;
 
-                        if(isVisible) {
+                        // Setting Visibility of this tile...
+                        bool visible = !line.IsInShadow(projection);
+                        currentTile.IsVisible = visible;
+
+                        if(visible) {
                             currentTile.WasTileDiscovered = true;
                         }
 
-                        if(isVisible && m_dungeonGeneration.GetTile(position.x, position.y).IsWall) {
-                            shadowLine.AddShadowToLine(projection);
-                            fullShadow = shadowLine.IsFullShadow;
+                        if(visible && currentTile.IsWall) {
+                            line.AddShadowToLine(projection);
+                            fullShadow = line.IsFullShadow;
                         }
                     }
 
@@ -166,32 +155,33 @@ namespace FourthDimension.Roguelike {
             }
         }
 
-        private Vector3Int CalculatePositionInOctant(int _row, int _col, int _octant) {
-            switch(_octant) {
+        private Vector2 ConvertPositionToOctantPosition(int _row, int _col, int _octant) {
+            switch (_octant) {
                 case 0:
-                    return new Vector3Int(_col, -_row, 0);
+                    return new Vector2(_col, _row);
                 case 1:
-                    return new Vector3Int(_row, -_col, 0);
+                    return new Vector2(_row, _col);
                 case 2:
-                    return new Vector3Int(_row, _col, 0);
+                    return new Vector2(_row, -_col);
                 case 3:
-                    return new Vector3Int(_col, _row, 0);
+                    return new Vector2(_col, -_row);
                 case 4:
-                    return new Vector3Int(-_col, _row, 0);
+                    return new Vector2(-_col, -_row);
                 case 5:
-                    return new Vector3Int(-_row, _col, 0);
+                    return new Vector2(-_row, -_col);
                 case 6:
-                    return new Vector3Int(-_row, -_col, 0);
+                    return new Vector2(-_row, _col);
                 case 7:
-                    return new Vector3Int(-_col, -_row, 0);
+                    return new Vector2(-_col, _row);
             }
 
-            return Vector3Int.zero;
+            return Vector2.zero;
         }
 
+        // TODO I think the error is here...
         private Shadow ProjectTile(int _row, int _col) {
-            int topLeft = (_col / (_row + 2));
-            int bottomRight = (_col + 1) / (_row + 1);
+            float topLeft = (_col / (_row + 2));
+            float bottomRight = Mathf.Ceil(_col + 1) / (_row + 1);
             return new Shadow(topLeft, bottomRight);
         }
 
