@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace FourthDimension.Roguelike {
+
+    #region Bob Nystrom Shadow Cast Helper Classes
     public class ShadowLine {
         List<Shadow> m_shadows;
 
@@ -96,9 +98,17 @@ namespace FourthDimension.Roguelike {
             return (start <= _other.start && end >= _other.end);
         }
     }
+    #endregion
 
     public class FieldOfView : MonoBehaviour {
-        private const int km_maxDistance = 13;
+        public enum EFieldOfViewMethod {
+            BobNystromShadowCast
+        }
+
+        private const EFieldOfViewMethod km_method = EFieldOfViewMethod.BobNystromShadowCast;
+        private const bool km_fovLightWalls = true;
+        private const int km_fovTorchRadius = 5;
+        private const int km_maxDistance = 50;
         private Dungeon.DungeonGeneration m_dungeonGeneration;
 
         private void Awake() {
@@ -106,17 +116,24 @@ namespace FourthDimension.Roguelike {
         }
 
         public void InitializeFieldOfView(Vector2 _position) {
-            m_dungeonGeneration.GetTile((int)_position.x, (int)_position.y).IsVisible = true;
-            m_dungeonGeneration.GetTile((int)_position.x, (int)_position.y).UpdateTile();
             RefreshVisibility(_position);
         }
 
         public void RefreshVisibility(Vector2 _originPosition) {
-            for(int octant = 0; octant < 8; octant++) {
-                RefreshOctant2(_originPosition, octant);
+            m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).WasTileDiscovered = true;
+            m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).IsVisible = true;
+            m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).UpdateTile();
+
+            switch (km_method) {
+                case EFieldOfViewMethod.BobNystromShadowCast:
+                        for (int octant = 0; octant < 8; octant++) {
+                            RefreshOctant2(_originPosition, octant);
+                        }
+                    break;
             }
         }
 
+        #region Bob Nystrom Shadow Cast
         private void RefreshOctant2(Vector2 _originPosition, int _octant) {
             ShadowLine line = new ShadowLine();
             bool fullShadow = false;
@@ -134,20 +151,24 @@ namespace FourthDimension.Roguelike {
                     if(fullShadow && !fullShadow) {
                         currentTile.IsVisible = false;
                     } else {
+                        
                         Shadow projection = ProjectTile(row, col);
 
                         // Setting Visibility of this tile...
                         bool visible = !line.IsInShadow(projection);
                         currentTile.IsVisible = visible;
 
+                        
                         if(visible) {
                             currentTile.WasTileDiscovered = true;
                         }
+                        
 
                         if(visible && currentTile.IsWall) {
                             line.AddShadowToLine(projection);
                             fullShadow = line.IsFullShadow;
                         }
+                        
                     }
 
                     currentTile.UpdateTile();
@@ -178,12 +199,23 @@ namespace FourthDimension.Roguelike {
             return Vector2.zero;
         }
 
-        // TODO I think the error is here...
+        /// <summary>
+        /// Returns the SLOPE corresponding to the current (row, col) position
+        /// </summary>
+        /// <param name="_row">Current row</param>
+        /// <param name="_col">Current col</param>
+        /// <returns>Returns a slope indicating the Projection of a tile.</returns>
         private Shadow ProjectTile(int _row, int _col) {
-            float topLeft = (_col / (_row + 2));
-            float bottomRight = Mathf.Ceil(_col + 1) / (_row + 1);
+            // forcing row and col to be float so we don't get bamboozled by int/float conversion somewhere
+            float row = _row;
+            float col = _col;
+
+            float topLeft = (col / (row + 2));
+            float bottomRight = (col + 1) / (row + 1);
+
             return new Shadow(topLeft, bottomRight);
         }
+        #endregion
 
     }
 }
