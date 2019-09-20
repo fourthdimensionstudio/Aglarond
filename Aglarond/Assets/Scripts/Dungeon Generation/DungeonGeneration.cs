@@ -512,6 +512,16 @@ namespace FourthDimension.Dungeon {
         public int GetDungeonSize(int _dimension) {
             return m_dungeonTiles.GetLength(_dimension);
         }
+
+        public void RevealAllTiles() {
+            for(int x = 0; x < m_dungeonTiles.GetLength(0); x++) {
+                for(int y = 0; y < m_dungeonTiles.GetLength(1); y++) {
+                    m_dungeonTiles[x, y].IsVisible = true;
+                    m_dungeonTiles[x, y].WasTileDiscovered = true;
+                    m_dungeonTiles[x, y].UpdateTile();
+                }
+            }
+        }
         #endregion
 
         // ...
