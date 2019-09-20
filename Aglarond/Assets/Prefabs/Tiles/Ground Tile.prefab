@@ -103,6 +103,6 @@ MonoBehaviour:
   totallyVisibleColor: {r: 1, g: 1, b: 1, a: 1}
   partiallyVisibleColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
   nonVisibleColor: {r: 0, g: 0, b: 0, a: 1}
-  visibleSpriteMask: Default
-  partiallyVisibleSpriteMask: Default
-  nonVisibleSpriteMask: Default
+  visibleSpriteMask: Ground
+  partiallyVisibleSpriteMask: Hidden
+  nonVisibleSpriteMask: Unknown

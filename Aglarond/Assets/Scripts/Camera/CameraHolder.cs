@@ -1,5 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * MIT License
+ * Copyright (c) 2019 Fourth Dimension Studios
+ * Code written by Guilherme de Oliveira
+ */
+
+using System.Collections;
 using UnityEngine;
 
 namespace FourthDimension.CameraUtilities {
@@ -16,7 +21,9 @@ namespace FourthDimension.CameraUtilities {
         public static CameraHolder instance;
 
         [Header("Cameras on Scene")]
+        // The Main Camera, the one who won't shake (probably the one following the player, has its own Script)
         public Camera mainCamera;
+        // Shake Camera, the reason this is a different camera is because we don't want to mess with the real camera position, so we won't have to do extra code to make sure the camera return to its original position.
         public Camera screenshakeCamera;
 
         // Screenshake Configuration Constants
@@ -33,13 +40,28 @@ namespace FourthDimension.CameraUtilities {
             } else {
                 Destroy(gameObject);
             }
+
+            if(mainCamera == null) {
+                Debug.LogWarning("[CAMERA HOLDER] Main Camera is not assigned to Camera Holder!");
+            }
+
+            if(screenshakeCamera == null) {
+                Debug.LogWarning("[CAMERA HOLDER] Screenshake Camera is not assigned to Camera Holder!");
+            }
         }
 
         private void Start() {
             m_shakeRoutine = null;
             m_cameraTrauma = 0f;
+            
         }
 
+        #region Screenshake
+        /// <summary>
+        /// <para>Add trauma to camera, causing screen to shake</para>
+        /// </summary>
+        /// <param name="_amount">Amount of trauma to add</param>
+        /// <param name="_style">Style of trauma added</param>
         public void AddTraumaToCamera(float _amount, EShakeStyle _style) {
             m_shakeStyle = _style;
             AddTraumaToCamera(_amount);
@@ -47,8 +69,8 @@ namespace FourthDimension.CameraUtilities {
 
         private void AddTraumaToCamera(float _amount) {
             if(m_cameraTrauma <= 0) {
-                // screenshakeCamera.transform.position = mainCamera.transform.position;
-                // TODO ensure both cameras ortographic sizes are the same.
+                screenshakeCamera.transform.position = mainCamera.transform.position;
+                screenshakeCamera.orthographicSize = mainCamera.orthographicSize;
                 screenshakeCamera.enabled = true;
                 mainCamera.enabled = false;
                 m_cameraTrauma = Mathf.Clamp01(_amount);
@@ -114,5 +136,6 @@ namespace FourthDimension.CameraUtilities {
             newRotation.z += _offset;
             screenshakeCamera.transform.localEulerAngles = newRotation;
         }
+        #endregion
     }
 }

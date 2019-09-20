@@ -25,6 +25,11 @@ namespace FourthDimension.Dungeon {
         public Transform groundTilesParent;
         public Transform wallTilesParent;
 
+        [Header("Monster Spawning")]
+        public int monstersToSpawn = 50;
+        public GameObject[] enemyPrefabs;
+        public Transform enemiesParent;
+
         //---------------------------------------- Configuration
         // TODO Make a ScriptableObject with the config variables
         private const int km_stageWidth = 40;
@@ -97,6 +102,9 @@ namespace FourthDimension.Dungeon {
             ValidateDungeon();
             // I'm happy with this
             GenerateDefinitiveTilemap();
+
+            // Last Step
+            SpawnMonsters();
         }
 
         #region ROOM GENERATION
@@ -497,6 +505,13 @@ namespace FourthDimension.Dungeon {
             }
 
             Destroy(carvedRooms.gameObject);
+        }
+
+        private void SpawnMonsters() {
+            for(int i = 0; i < monstersToSpawn; i++) {
+                Vector2 positionToSpawn = m_rooms.RandomOrDefault().GetRandomPositionInRoom();
+                Instantiate(enemyPrefabs.RandomOrDefault(), positionToSpawn, Quaternion.identity, enemiesParent);
+            }
         }
         #endregion
 

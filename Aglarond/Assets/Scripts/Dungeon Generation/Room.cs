@@ -73,5 +73,14 @@ namespace FourthDimension.Dungeon {
         public Vector2 GetRoomCenter() {
             return new Vector2(roomPosition.x + width/2, roomPosition.y + height/2);
         }
+
+        public Vector2 GetRandomPositionInRoom() {
+            Vector2 randomPosition = new Vector2(
+                Mathf.RoundToInt(Random.Range(roomBoundaries.bottomLeft.x + 2, roomBoundaries.bottomRight.x - 2)),
+                Mathf.RoundToInt(Random.Range(roomBoundaries.bottomLeft.y + 2, roomBoundaries.topLeft.y - 2))
+                );
+
+            return randomPosition;
+        }
     }
 }

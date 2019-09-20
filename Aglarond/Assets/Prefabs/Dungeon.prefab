@@ -92,6 +92,36 @@ Transform:
   m_Father: {fileID: 1588888766}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2100771898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100771899}
+  m_Layer: 0
+  m_Name: Enemies
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100771899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100771898}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1697163925086036820}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1697163925086036823
 GameObject:
   m_ObjectHideFlags: 0
@@ -122,6 +152,7 @@ Transform:
   - {fileID: 1697163925578274381}
   - {fileID: 1697163925436191086}
   - {fileID: 1588888766}
+  - {fileID: 2100771899}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -223,6 +254,10 @@ MonoBehaviour:
     type: 3}
   groundTilesParent: {fileID: 1776646005}
   wallTilesParent: {fileID: 1101323117}
+  monstersToSpawn: 50
+  enemyPrefabs:
+  - {fileID: 3219326088926308601, guid: dd5d9b8470d18674e8e815a31263c040, type: 3}
+  enemiesParent: {fileID: 2100771899}
 --- !u!1 &1697163926210484579
 GameObject:
   m_ObjectHideFlags: 0

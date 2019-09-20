@@ -39,6 +39,10 @@ namespace FourthDimension.TurnBased {
         // ------------------------------------------------------------------
         // ------------------------------------------------------------------
         #region MANIPULATION
+        public void AddDynamicActorToScene(Actor.DynamicActorComponent _dynamicActor) {
+            m_dynamicActorsOnScene.Add(_dynamicActor);
+        }
+
         public void RemoveDynamicActorFromScene(Actor.DynamicActorComponent _dynamicActor) {
             m_dynamicActorsOnScene.Remove(_dynamicActor);
         }

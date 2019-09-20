@@ -181,8 +181,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   actorAttackedSounds:
-  - {fileID: 8300000, guid: 2ae09fc1f03f340a08b8e2782e2d31e7, type: 3}
+  - {fileID: 8300000, guid: 5b857e1ae42344b12aa345de2fb3c57a, type: 3}
   actorDamagedSounds:
-  - {fileID: 8300000, guid: b26112b9f2212499e8acee3ebe6210b9, type: 3}
+  - {fileID: 8300000, guid: d712c98248057444e96c7e96f2a7c3e0, type: 3}
+  - {fileID: 8300000, guid: aaa6da885d2544365bd82601eccc609f, type: 3}
+  - {fileID: 8300000, guid: 330ec04c729fe40429045c0e2441ec22, type: 3}
+  - {fileID: 8300000, guid: b4f68e2e78e52491db1521c984f89721, type: 3}
   actorDiedSounds:
-  - {fileID: 8300000, guid: cc5ef05a1e9ac4c2b9c5d83e8f1edaa5, type: 3}
+  - {fileID: 8300000, guid: 06eac8a71e57c40b589e8f31ed67debc, type: 3}
+  - {fileID: 8300000, guid: ba5c4450528f2483b942d04da5646605, type: 3}
+  - {fileID: 8300000, guid: bbb3a4cf872964d22818a3059a958a3f, type: 3}
+  - {fileID: 8300000, guid: c1fa29143ddd64ad29a5184fe9a7a9d4, type: 3}

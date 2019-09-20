@@ -41,12 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ground
+    uniqueID: 928895303
+    locked: 0
   - name: Enemy
     uniqueID: 2405661979
     locked: 0
   - name: Player
     uniqueID: 1695041749
     locked: 0
-  - name: Field of View
+  - name: Hidden
     uniqueID: 2437578267
+    locked: 0
+  - name: Unknown
+    uniqueID: 35924343
     locked: 0

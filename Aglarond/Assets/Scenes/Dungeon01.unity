@@ -449,18 +449,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: fieldOfViewTilemap
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: dungeonTilemap
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1393186641, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
-      propertyPath: collisionTilemap
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}
 --- !u!1001 &1637928470
