@@ -45,6 +45,8 @@ namespace FourthDimension.TurnBased {
 
         public void RemoveDynamicActorFromScene(Actor.DynamicActorComponent _dynamicActor) {
             m_dynamicActorsOnScene.Remove(_dynamicActor);
+
+            m_currentActorTurn = (m_currentActorTurn % m_dynamicActorsOnScene.Count);
         }
 
         public bool IsThereAnActorAt(Vector2 _positionToCheck) {
@@ -85,7 +87,10 @@ namespace FourthDimension.TurnBased {
         #region COMBAT SYSTEM
         public void HandleCombat(Actor.DynamicActorComponent _actorDealingDamage, Actor.DynamicActorComponent _actorTakingDamage) {
             _actorDealingDamage.ActorDealtDamage();
-            _actorTakingDamage.ActorSufferedDamage(CalculateDamage(_actorDealingDamage.actorStat.baseDamage, damageRandomInterval));
+
+            int damageDealt = CalculateDamage(_actorDealingDamage.actorStat.baseDamage, damageRandomInterval);
+            _actorTakingDamage.ActorSufferedDamage(damageDealt);
+            GameController.instance.RenderFeedbackText(_actorTakingDamage.CurrentPosition, damageDealt.ToString(), Color.red);
         }
 
         private int CalculateDamage(int _baseDamage, float _randomModifier) {

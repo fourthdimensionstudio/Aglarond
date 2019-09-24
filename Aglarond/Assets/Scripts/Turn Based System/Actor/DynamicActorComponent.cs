@@ -148,7 +148,6 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public void ActorSufferedDamage(int _damage) {
-            // TODO Flash ?
             // TODO Particle Effects?
             m_currentHealth -= _damage;
 

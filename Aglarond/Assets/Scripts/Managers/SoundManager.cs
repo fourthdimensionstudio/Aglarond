@@ -30,6 +30,10 @@ namespace FourthDimension.Managers {
         }
 
         #region MUSIC
+        /// <summary>
+        /// <para>Play a background music</para>
+        /// </summary>
+        /// <param name="_clip">Music to play</param>
         public void PlayBackgroundMusic(AudioClip _clip) {
             if (!musicEnabled || !musicSource || !_clip) {
                 return;
@@ -42,12 +46,15 @@ namespace FourthDimension.Managers {
             musicSource.Play();
         }
 
+        /// <summary>
+        /// <para>Activate or deactivates whether music is playing or not</para>
+        /// </summary>
         public void ToggleMusic() {
             musicEnabled = !musicEnabled;
             UpdateMusic();
         }
 
-        public void UpdateMusic() {
+        private void UpdateMusic() {
             musicSource.volume = musicVolume;
 
             if (musicSource.isPlaying != musicEnabled) {
@@ -59,6 +66,10 @@ namespace FourthDimension.Managers {
             }
         }
 
+        /// <summary>
+        /// <para>Updates music volume</para>
+        /// </summary>
+        /// <param name="_volume">Volume to set music to</param>
         public void UpdateMusicVolume(float _volume) {
             musicVolume = _volume;
             UpdateMusic();
@@ -66,12 +77,15 @@ namespace FourthDimension.Managers {
         #endregion
 
         #region SOUND EFFECTS
+        /// <summary>
+        /// <para>Activates or deactivates whether the sound effects are playing or not</para>
+        /// </summary>
         public void ToggleEffects() {
             effectsEnabled = !effectsEnabled;
         }
 
         /// <summary>
-        /// Play an AudioClip once.
+        /// <para>Play an AudioClip once.</para>
         /// </summary>
         /// <param name="_clip">AudioClip that will be played</param>
         public void PlayEffect(AudioClip _clip) {
@@ -82,10 +96,15 @@ namespace FourthDimension.Managers {
             effectsSource.PlayOneShot(_clip);
         }
 
+        /// <summary>
+        /// <para>Update Sound Effects volume</para>
+        /// </summary>
+        /// <param name="_volume">Volume to set sound effects to</param>
         public void UpdateEffectsVolume(float _volume) {
             effectsVolume = _volume;
             UpdateEffects();
         }
+
 
         private void UpdateEffects() {
             effectsSource.volume = effectsVolume;
