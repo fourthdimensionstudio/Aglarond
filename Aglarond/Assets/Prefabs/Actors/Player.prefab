@@ -172,6 +172,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 24fb20f673d974fc5b527c0aa31ffe56, type: 3}
   - {fileID: 8300000, guid: 7a0123116d83543a7a648de5b9b03701, type: 3}
   - {fileID: 8300000, guid: 792ba8886f9674573a6ed7e2ccbe29fa, type: 3}
+  actorHitParticles: {fileID: 2248837076186228238, guid: d517c08ed82ac33448a09534786b1c22,
+    type: 3}
 --- !u!114 &1393186641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,7 +255,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1695041749
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1337135937646635300, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}

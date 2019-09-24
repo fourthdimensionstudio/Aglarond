@@ -18,7 +18,9 @@ namespace FourthDimension.TurnBased.Actor {
         public AudioClip[] actorDamagedSounds;
         public AudioClip[] actorDiedSounds;
 
-        // TODO Particles?
+        [Header("Particle Effects")]
+        public ParticleSystem actorHitParticles;
+
         // TODO Death?
 
         // Sprite Flashing Related
@@ -148,8 +150,8 @@ namespace FourthDimension.TurnBased.Actor {
         }
 
         public void ActorSufferedDamage(int _damage) {
-            // TODO Particle Effects?
             m_currentHealth -= _damage;
+            Instantiate(actorHitParticles, m_currentPosition, Quaternion.identity).Play();
 
             if (m_currentHealth < 0) {
                 Die();

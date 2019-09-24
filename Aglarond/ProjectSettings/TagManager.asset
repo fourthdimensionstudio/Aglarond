@@ -56,3 +56,6 @@ TagManager:
   - name: Unknown
     uniqueID: 35924343
     locked: 0
+  - name: Particles
+    uniqueID: 3592956605
+    locked: 0
