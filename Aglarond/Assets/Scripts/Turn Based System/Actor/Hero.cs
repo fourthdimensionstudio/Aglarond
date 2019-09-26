@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿/*
+ * MIT License
+ * Copyright (c) 2019 Fourth Dimension Studios
+ * Code written by Guilherme de Oliveira
+ */
 
 namespace FourthDimension.TurnBased.Actor {
     public class Hero : DynamicActorComponent {
@@ -16,6 +18,7 @@ namespace FourthDimension.TurnBased.Actor {
 
         public void InitializeHero() {
             // TODO Mobile Input
+            // TODO Controller Input
             m_playerInputSystem = new Input.AxisInput();
             m_fieldOfView = GetComponent<Roguelike.FieldOfView>();
             InitializeActor(EActorType.Player);

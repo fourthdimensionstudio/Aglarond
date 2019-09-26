@@ -5,9 +5,7 @@
  */
 
 using FourthDimension.AI;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using FourthDimension.Input;
 
 namespace FourthDimension.TurnBased.Actor {
     public class ReactiveEnemy : DynamicActorComponent {
@@ -35,14 +33,14 @@ namespace FourthDimension.TurnBased.Actor {
         private EReturnStatus MoveTowardsPlayer() {
             Input.EMovementDirection movement = Input.EMovementDirection.NONE;
 
-            if(m_heroReference.CurrentPosition.x < m_currentPosition.x) {
-                movement = Input.EMovementDirection.LEFT;
-            } else if(m_heroReference.CurrentPosition.x > m_currentPosition.x) {
-                movement = Input.EMovementDirection.RIGHT;
-            } else if(m_heroReference.CurrentPosition.y < m_currentPosition.y) {
-                movement = Input.EMovementDirection.DOWN;
-            } else if(m_heroReference.CurrentPosition.y > m_currentPosition.y) {
-                movement = Input.EMovementDirection.UP;
+            if(m_heroReference.CurrentPosition.x < m_currentPosition.x && CanMoveOnDirection(EMovementDirection.LEFT)) {
+                movement = EMovementDirection.LEFT;
+            } else if(m_heroReference.CurrentPosition.x > m_currentPosition.x && CanMoveOnDirection(EMovementDirection.RIGHT)) {
+                movement = EMovementDirection.RIGHT;
+            } else if(m_heroReference.CurrentPosition.y < m_currentPosition.y && CanMoveOnDirection(EMovementDirection.DOWN)) {
+                movement = EMovementDirection.DOWN;
+            } else if(m_heroReference.CurrentPosition.y > m_currentPosition.y && CanMoveOnDirection(EMovementDirection.UP)) {
+                movement = EMovementDirection.UP;
             }
 
             Move(movement);

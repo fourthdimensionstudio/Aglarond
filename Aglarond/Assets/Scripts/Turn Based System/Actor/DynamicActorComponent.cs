@@ -1,5 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * MIT License
+ * Copyright (c) 2019 Fourth Dimension Studios
+ * Code written by Guilherme de Oliveira
+ */
+
+
+using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 
@@ -45,6 +51,10 @@ namespace FourthDimension.TurnBased.Actor {
             return true;
         }
 
+        /// <summary>
+        /// <para>Tries to move the Dynamic Actor on the specified direction</para>
+        /// </summary>
+        /// <param name="_movementDirection">Direction which agent will atempt to move</param>
         public void Move(Input.EMovementDirection _movementDirection) {
             Vector2 movementDirection = Input.InputUtilities.GetMovementVectorFromDirection(_movementDirection);
             // Handling Combat
@@ -70,6 +80,10 @@ namespace FourthDimension.TurnBased.Actor {
             }
 
             return false;
+        }
+
+        protected bool CanMoveOnDirection(Input.EMovementDirection _direction) {
+            return CanMoveOnDirection(Input.InputUtilities.GetMovementVectorFromDirection(_direction));
         }
 
         protected bool CanMoveOnDirection(Vector2 _movementDirection) {
@@ -144,11 +158,18 @@ namespace FourthDimension.TurnBased.Actor {
         #endregion
 
         #region COMBAT HANDLING
+        /// <summary>
+        /// <para>Perform necessary logic when actor dealt damage</para>
+        /// </summary>
         public void ActorDealtDamage() {
             PlaySoundEffect(actorAttackedSounds.RandomOrDefault());
             onActorAttacked?.Invoke();
         }
 
+        /// <summary>
+        /// <para>Perform necessary logic when actor suffered damage</para>
+        /// </summary>
+        /// <param name="_damage">Amount of damage suffered</param>
         public void ActorSufferedDamage(int _damage) {
             m_currentHealth -= _damage;
 
