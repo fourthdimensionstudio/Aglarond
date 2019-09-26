@@ -112,7 +112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6738284148149277497}
   - component: {fileID: 6738284148149277447}
-  - component: {fileID: 6738284148149277496}
+  - component: {fileID: 5656217876760881608}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -161,7 +161,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6738284148149277496
+--- !u!114 &5656217876760881608
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,27 +170,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6738284148149277498}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faf776ce9e8209d42a8af05127450422, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d6f8d1ef8b7bc74298e6102fa93c9a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   actorStat: {fileID: 11400000, guid: de5ae583cf241f8439b931bc52eab5d7, type: 2}
   movementBlockedLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   triggersLayers:
     serializedVersion: 2
     m_Bits: 0
-  actorAttackedSounds:
-  - {fileID: 8300000, guid: 5b857e1ae42344b12aa345de2fb3c57a, type: 3}
-  actorDamagedSounds:
-  - {fileID: 8300000, guid: d712c98248057444e96c7e96f2a7c3e0, type: 3}
-  - {fileID: 8300000, guid: aaa6da885d2544365bd82601eccc609f, type: 3}
-  - {fileID: 8300000, guid: 330ec04c729fe40429045c0e2441ec22, type: 3}
-  - {fileID: 8300000, guid: b4f68e2e78e52491db1521c984f89721, type: 3}
-  actorDiedSounds:
-  - {fileID: 8300000, guid: 06eac8a71e57c40b589e8f31ed67debc, type: 3}
-  - {fileID: 8300000, guid: ba5c4450528f2483b942d04da5646605, type: 3}
-  - {fileID: 8300000, guid: bbb3a4cf872964d22818a3059a958a3f, type: 3}
-  - {fileID: 8300000, guid: c1fa29143ddd64ad29a5184fe9a7a9d4, type: 3}
-  actorHitParticles: {fileID: 6534619950974476331, guid: 2308cf35c1b70f94cb0530cf6021db47,
-    type: 3}
+  actorAttackedSounds: []
+  actorDamagedSounds: []
+  actorDiedSounds: []
+  actorHitParticles: {fileID: 0}

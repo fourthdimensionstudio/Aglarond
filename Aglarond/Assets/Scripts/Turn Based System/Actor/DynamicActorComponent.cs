@@ -151,7 +151,10 @@ namespace FourthDimension.TurnBased.Actor {
 
         public void ActorSufferedDamage(int _damage) {
             m_currentHealth -= _damage;
-            Instantiate(actorHitParticles, m_currentPosition, Quaternion.identity).Play();
+
+            if(actorHitParticles) {
+                Instantiate(actorHitParticles, m_currentPosition, Quaternion.identity).Play();
+            }
 
             if (m_currentHealth < 0) {
                 Die();

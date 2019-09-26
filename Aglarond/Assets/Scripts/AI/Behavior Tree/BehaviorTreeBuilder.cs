@@ -1,4 +1,9 @@
-﻿using System.Collections;
+﻿/*
+ * MIT License
+ * Copyright (c) 2019 Fourth Dimension Studios
+ * Code written by Guilherme de Oliveira
+ */
+
 using System.Collections.Generic;
 using UnityEngine;
 
