@@ -555,6 +555,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6738284148149277498, guid: 15c6e819d56d82d46816d7f05d323b98,
         type: 3}
+    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
+        type: 3}
+      propertyPath: monstersToSpawn
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa03e2e01c9c31849a92338a418b0be6, type: 3}
 --- !u!224 &390732151 stripped

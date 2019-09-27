@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FourthDimension.Input {
     public class AxisInput : BaseInput {
-        private const float km_holdingTimeToAct = 0.1f;
+        private const float km_holdingTimeToAct = 0.25f;
         private float m_holdingInputTime;
 
         public AxisInput() {

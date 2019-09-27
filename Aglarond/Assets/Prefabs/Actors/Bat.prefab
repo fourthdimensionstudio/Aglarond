@@ -180,7 +180,11 @@ MonoBehaviour:
   triggersLayers:
     serializedVersion: 2
     m_Bits: 0
-  actorAttackedSounds: []
-  actorDamagedSounds: []
-  actorDiedSounds: []
-  actorHitParticles: {fileID: 0}
+  actorAttackedSounds:
+  - {fileID: 8300000, guid: f7d28679aa4984f09836518c3b5af486, type: 3}
+  actorDamagedSounds:
+  - {fileID: 8300000, guid: e247af45069104b79b51774979d77bf6, type: 3}
+  actorDiedSounds:
+  - {fileID: 8300000, guid: f8492efd122c14a6d8c860a7be68e5b0, type: 3}
+  actorHitParticles: {fileID: 2248837076186228238, guid: d517c08ed82ac33448a09534786b1c22,
+    type: 3}
