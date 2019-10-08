@@ -90,14 +90,15 @@ namespace FourthDimension.Dungeon {
         private void GenerateDungeon() {
             // I'm happy with this
             CreateRooms();
-            // I'm happy with this
+
+            // I'm NOT happy with this
             CreatePathways();
 
             // I'm NOT happy with this
-            CreateConnections();
+            // CreateConnections();
 
             // I'm happy with this
-            CleanDeadEnds();
+            // CleanDeadEnds();
 
             // I'm happy with this
             // ValidateDungeon();
