@@ -148,7 +148,7 @@ namespace FourthDimension.Roguelike {
                         continue;
                     }
 
-                    if(fullShadow && !fullShadow) {
+                    if(fullShadow) {
                         currentTile.IsVisible = false;
                     } else {
                         
