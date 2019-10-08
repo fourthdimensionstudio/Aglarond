@@ -98,13 +98,15 @@ namespace FourthDimension.Dungeon {
 
             // I'm happy with this
             CleanDeadEnds();
+
             // I'm happy with this
-            ValidateDungeon();
+            // ValidateDungeon();
+
             // I'm happy with this
-            GenerateDefinitiveTilemap();
+            // GenerateDefinitiveTilemap();
 
             // Last Step
-            SpawnMonsters();
+            // SpawnMonsters();
         }
 
         #region ROOM GENERATION
