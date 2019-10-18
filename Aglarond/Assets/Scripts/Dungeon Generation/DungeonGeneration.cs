@@ -126,8 +126,6 @@ namespace FourthDimension.Dungeon {
                 m_rooms.Add(roomToAdd);
 
                 // Creating a new region for this room
-                Region newRegion = new Region(++m_currentRegion);
-                newRegion.AddRegionUnitToRegion(roomToAdd);
                 CarveRoom(roomToAdd);
             }
 
