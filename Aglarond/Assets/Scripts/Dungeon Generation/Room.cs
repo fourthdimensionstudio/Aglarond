@@ -28,12 +28,15 @@ namespace FourthDimension.Dungeon {
             roomPosition = _roomPosition;
             width = _width;
             height = _height;
+            CalculateRoomBoundaries();
+        }
 
+        public void CalculateRoomBoundaries() {
             roomBoundaries = new RoomBoundaries(
-                new Vector2(_roomPosition.x, _roomPosition.y + height),
-                new Vector2(_roomPosition.x + _width, _roomPosition.y + _height),
-                _roomPosition,
-                new Vector2(_roomPosition.x + _width, _roomPosition.y)
+                new Vector2(roomPosition.x, roomPosition.y + height),
+                new Vector2(roomPosition.x + width, roomPosition.y + height),
+                roomPosition,
+                new Vector2(roomPosition.x + width, roomPosition.y)
                 );
         }
 

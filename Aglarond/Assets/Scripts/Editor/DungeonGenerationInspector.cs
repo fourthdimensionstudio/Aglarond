@@ -9,7 +9,7 @@ public class DungeonGenerationInspector : Editor {
 
         GUILayout.Space(20);
         if (GUILayout.Button("Reveal All Tiles")) {
-            dungeon.RevealAllTiles();
+            // TODO dungeon.RevealAllTiles();
         }
     }
 }
