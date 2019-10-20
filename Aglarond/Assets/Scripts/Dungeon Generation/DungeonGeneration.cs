@@ -11,16 +11,27 @@ namespace FourthDimension.Dungeon {
         DOOR
     }
 
+    [System.Serializable]
     public class Room {
         public int width;
         public int height;
         private Vector2 m_centerPosition;
-        private List<Vector2> positionsInRoom;
-        private List<Vector2> doorCandidates;
+        public Vector2 CenterPosition {
+            get {
+                return m_centerPosition;
+            }
+            set {
+                m_centerPosition = value;
+            }
+        }
+
+        public List<Vector2> positionsInRoom;
+        public List<Vector2> doorCandidates;
 
         public Room(int _width, int _height) {
             width = _width;
             height = _height;
+            m_centerPosition = Vector2.zero;
             positionsInRoom = new List<Vector2>();
             doorCandidates = new List<Vector2>();
 
@@ -34,14 +45,10 @@ namespace FourthDimension.Dungeon {
             }
 
             // at this point, this is a square room, adding door candidates
-            doorCandidates.Add(new Vector2(Random.Range(-halfWidth, halfWidth), halfHeight + 1));
-            doorCandidates.Add(new Vector2(Random.Range(-halfWidth, halfWidth), -halfHeight - 1));
-            doorCandidates.Add(new Vector2(halfWidth + 1, Random.Range(-halfHeight, halfHeight)));
-            doorCandidates.Add(new Vector2(-halfWidth - 1, Random.Range(-halfHeight, halfHeight)));
-        }
-
-        public void SetCenterPosition(Vector2 _centerPosition) {
-            m_centerPosition = _centerPosition;
+            doorCandidates.Add(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), halfHeight + 1));
+            doorCandidates.Add(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), -halfHeight - 1));
+            doorCandidates.Add(new Vector2(halfWidth + 1, Random.Range(-halfHeight + 2, halfHeight - 1)));
+            doorCandidates.Add(new Vector2(-halfWidth - 1, Random.Range(-halfHeight + 2, halfHeight - 1)));
         }
 
         public List<Vector2> GetWorldPositions() {
@@ -120,7 +127,7 @@ namespace FourthDimension.Dungeon {
             }
 
             Room starterRoom = CreateARoom();
-            starterRoom.SetCenterPosition(new Vector2(km_stageWidth / 2, km_stageHeight / 2));
+            starterRoom.CenterPosition = new Vector2(km_stageWidth / 2, km_stageHeight / 2);
             ConsolidateRoom(starterRoom);
             m_rooms.Add(starterRoom);
             // add another room
@@ -128,8 +135,11 @@ namespace FourthDimension.Dungeon {
 
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 Room roomBeingAdded = CreateARoom();
+                Room roomToAttachTo = m_rooms.RandomOrDefault();
+                PlaceRoom(roomBeingAdded, roomToAttachTo);
             }
 
+            CleanupDungeon();
             GenerateDungeonTiles();
         }
 
@@ -148,29 +158,90 @@ namespace FourthDimension.Dungeon {
             List<Vector2> doorPositions = _roomToConsolidate.GetDoorsInWorldPosition();
 
             foreach (Vector2 position in positionsToConsolidate) {
+                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
+                    continue;
+                }
+
                 m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.FLOOR;
             }
 
             foreach(Vector2 position in doorPositions) {
+                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
+                    continue;
+                }
+
                 m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.DOOR_CANDIDATE;
+            }
+        }
+
+        private void PlaceRoom(Room _roomBeingPlaced, Room _connectedRoom) {
+            List<Vector2> connectedRoomDoorPositions = _connectedRoom.GetDoorsInWorldPosition();
+            List<Vector2> roomBeingPlacedDoorPositions = _roomBeingPlaced.GetDoorsInWorldPosition(); // right now, the room being placed is centered on (0,0)
+            List<Vector2> roomBeingPlacedPositions = _roomBeingPlaced.GetWorldPositions();
+
+
+            for(int i = 0; i < roomBeingPlacedDoorPositions.Count; i++) {
+                for(int j = 0; j < connectedRoomDoorPositions.Count; j++) {
+                    Vector2 centerCandidate = connectedRoomDoorPositions[j] - roomBeingPlacedDoorPositions[i];
+                    Debug.Log($"Center Candidate: {centerCandidate}");
+                    Debug.Log($"Door Position on Room Being Placed: {centerCandidate + roomBeingPlacedDoorPositions[i]} - Door Position on Room being connected: {connectedRoomDoorPositions[j]}");
+
+                    bool canRoomBePlaced = true;
+                    foreach(Vector2 position in roomBeingPlacedPositions) {
+                        int xPositionToCheck = (int)(centerCandidate.x + position.x);
+                        int yPositionToCheck = (int)(centerCandidate.y + position.y);
+
+                        if(xPositionToCheck < 0 || xPositionToCheck >= km_stageWidth || yPositionToCheck < 0 || yPositionToCheck >= km_stageHeight) {
+                            Debug.Log($"Cannot be placed because it is out of bounds!");
+                            canRoomBePlaced = false;
+                            break;
+                        }
+
+                        if(m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck] != EDungeonTile.WALL) {
+                            Debug.Log($"Cannot place room here because there is a {m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck]}");
+                            canRoomBePlaced = false;
+                            break;
+                        }
+                    }
+
+                    if(canRoomBePlaced) {
+                        _roomBeingPlaced.CenterPosition = centerCandidate;
+                        ConsolidateRoom(_roomBeingPlaced);
+                        m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].x, (int)connectedRoomDoorPositions[j].y] = EDungeonTile.DOOR;
+                        _roomBeingPlaced.doorCandidates.RemoveAt(i);
+                        _connectedRoom.doorCandidates.RemoveAt(j);
+                        m_rooms.Add(_roomBeingPlaced);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void CleanupDungeon() {
+            for(int x = 0; x < km_stageWidth; x++) {
+                for(int y = 0; y < km_stageHeight; y++) {
+                    if(m_abstractedDungeonTiles[x,y] == EDungeonTile.DOOR_CANDIDATE) {
+                        m_abstractedDungeonTiles[x, y] = EDungeonTile.WALL;
+                    }
+                }
             }
         }
 
         private void GenerateDungeonTiles() {
             for(int x = 0; x < km_stageWidth; x++) {
                 for(int y = 0; y < km_stageHeight; y++) {
-                    DungeonTile dungeonTile;
+                    DungeonTile dungeonTile = null;
                     // TODO => DOOR
 
                     if(m_abstractedDungeonTiles[x,y] == EDungeonTile.WALL) {
                         dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(wallTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y), true);
-                    } else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.DOOR_CANDIDATE) {
+                    } else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.DOOR) {
                         dungeonTile = Instantiate(doorTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));
-                    }  else {
+                    }  else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.FLOOR) {
                         dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));
