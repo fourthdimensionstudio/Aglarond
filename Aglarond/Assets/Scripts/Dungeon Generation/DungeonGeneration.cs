@@ -101,6 +101,13 @@ namespace FourthDimension.Dungeon {
         private const int km_amountAlloweedToExceedTilemap = 0;
         // -----------------------------------------------------
 
+        private Room m_starterRoom;
+        public Vector2 StartingPosition {
+            get {
+                return m_starterRoom.CenterPosition;
+            }
+        }
+
         private List<Room> m_rooms;
         private EDungeonTile[,] m_abstractedDungeonTiles;
         private DungeonTile[,] m_consolidatedDungeonTiles;
@@ -130,6 +137,7 @@ namespace FourthDimension.Dungeon {
             starterRoom.CenterPosition = new Vector2(km_stageWidth / 2, km_stageHeight / 2);
             ConsolidateRoom(starterRoom);
             m_rooms.Add(starterRoom);
+            m_starterRoom = starterRoom;
             // add another room
             // repeat until level is full
 
@@ -183,8 +191,8 @@ namespace FourthDimension.Dungeon {
             for(int i = 0; i < roomBeingPlacedDoorPositions.Count; i++) {
                 for(int j = 0; j < connectedRoomDoorPositions.Count; j++) {
                     Vector2 centerCandidate = connectedRoomDoorPositions[j] - roomBeingPlacedDoorPositions[i];
-                    Debug.Log($"Center Candidate: {centerCandidate}");
-                    Debug.Log($"Door Position on Room Being Placed: {centerCandidate + roomBeingPlacedDoorPositions[i]} - Door Position on Room being connected: {connectedRoomDoorPositions[j]}");
+                    // Debug.Log($"Center Candidate: {centerCandidate}");
+                    // Debug.Log($"Door Position on Room Being Placed: {centerCandidate + roomBeingPlacedDoorPositions[i]} - Door Position on Room being connected: {connectedRoomDoorPositions[j]}");
 
                     bool canRoomBePlaced = true;
                     foreach(Vector2 position in roomBeingPlacedPositions) {
@@ -192,13 +200,13 @@ namespace FourthDimension.Dungeon {
                         int yPositionToCheck = (int)(centerCandidate.y + position.y);
 
                         if(xPositionToCheck < 0 || xPositionToCheck >= km_stageWidth || yPositionToCheck < 0 || yPositionToCheck >= km_stageHeight) {
-                            Debug.Log($"Cannot be placed because it is out of bounds!");
+                            // Debug.Log($"Cannot be placed because it is out of bounds!");
                             canRoomBePlaced = false;
                             break;
                         }
 
                         if(m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck] != EDungeonTile.WALL) {
-                            Debug.Log($"Cannot place room here because there is a {m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck]}");
+                            // Debug.Log($"Cannot place room here because there is a {m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck]}");
                             canRoomBePlaced = false;
                             break;
                         }
@@ -228,10 +236,25 @@ namespace FourthDimension.Dungeon {
         }
 
         private void GenerateDungeonTiles() {
+            // Generating Borders
+            for(int x = -20; x < km_stageWidth + 20; x++) {
+                for(int y = -20; y < km_stageHeight + 20; y++) {
+                    if(x >= 0 && x < km_stageWidth && y >= 0 && y < km_stageHeight) {
+                        continue;
+                    }
+
+                    DungeonTile tile;
+                    tile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                    tile.transform.SetParent(wallTilesParent);
+                    tile.InitializeTile(new Vector2(x, y), true);
+                    tile.WasTileDiscovered = true;
+                    tile.UpdateTile();
+                }
+            }
+
             for(int x = 0; x < km_stageWidth; x++) {
                 for(int y = 0; y < km_stageHeight; y++) {
                     DungeonTile dungeonTile = null;
-                    // TODO => DOOR
 
                     if(m_abstractedDungeonTiles[x,y] == EDungeonTile.WALL) {
                         dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
@@ -260,6 +283,14 @@ namespace FourthDimension.Dungeon {
                     m_consolidatedDungeonTiles[x, y].UpdateTile();
                 }
             }
+        }
+
+        public DungeonTile GetTile(int _x, int _y) {
+            if (_x >= 0 && _x < m_consolidatedDungeonTiles.GetLength(0) && _y >= 0 && _y < m_consolidatedDungeonTiles.GetLength(1)) {
+                return m_consolidatedDungeonTiles[_x, _y];
+            }
+
+            return null;
         }
     }
 }

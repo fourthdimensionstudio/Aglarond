@@ -24,8 +24,8 @@ public class GameController : MonoBehaviour {
 
     private void Start() {
         // TODO
-        // m_heroReference.transform.position = m_dungeonGeneration.GetStartingPosition();
-        // m_heroReference.InitializeHero();
+        m_heroReference.transform.position = m_dungeonGeneration.StartingPosition;
+        m_heroReference.InitializeHero();
     }
 
     #region Communicating with the UI

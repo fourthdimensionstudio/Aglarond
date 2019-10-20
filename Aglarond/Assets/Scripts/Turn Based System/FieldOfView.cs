@@ -120,7 +120,6 @@ namespace FourthDimension.Roguelike {
         }
 
         public void RefreshVisibility(Vector2 _originPosition) {
-            /*
             m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).WasTileDiscovered = true;
             m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).IsVisible = true;
             m_dungeonGeneration.GetTile((int)_originPosition.x, (int)_originPosition.y).UpdateTile();
@@ -132,7 +131,6 @@ namespace FourthDimension.Roguelike {
                         }
                     break;
             }
-            */
         }
 
         #region Bob Nystrom Shadow Cast
@@ -140,8 +138,6 @@ namespace FourthDimension.Roguelike {
             ShadowLine line = new ShadowLine();
             bool fullShadow = false;
 
-            // TODO
-            /*
             for(int row = 1; row < km_maxDistance; row++) {
                 for(int col = 0; col <= row; col++) {
                     Vector2 position = _originPosition + ConvertPositionToOctantPosition(row, col, _octant);
@@ -177,7 +173,6 @@ namespace FourthDimension.Roguelike {
                     currentTile.UpdateTile();
                 }
             }
-            */
         }
 
         private Vector2 ConvertPositionToOctantPosition(int _row, int _col, int _octant) {

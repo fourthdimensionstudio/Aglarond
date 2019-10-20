@@ -560,6 +560,12 @@ PrefabInstance:
       propertyPath: monstersToSpawn
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
+        type: 3}
+      propertyPath: doorTile
+      value: 
+      objectReference: {fileID: 6752749683110287162, guid: 5dccddcb11a079145bd9ccef504ea0ce,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa03e2e01c9c31849a92338a418b0be6, type: 3}
 --- !u!224 &390732151 stripped
