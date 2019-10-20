@@ -4,20 +4,49 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace FourthDimension.Dungeon {
-    enum EDungeonTiles {
+    enum EDungeonTile {
         WALL,
         FLOOR,
         DOOR
     }
 
-    public class DungeonGeneration : MonoBehaviour {
-        [Header("Tilemaps for Debugging Generation")]
-        public Tilemap carvedRooms;
-        public Tile solidRock;
-        public Tile roomTile;
-        public Tile mazeTile;
-        public Tile possibleConnector;
+    public class Room {
+        public int width;
+        public int height;
+        private Vector2 m_centerPosition;
+        private List<Vector2> positionsInRoom;
 
+        public Room(int _width, int _height) {
+            width = _width;
+            height = _height;
+            positionsInRoom = new List<Vector2>();
+
+            int halfWidth = Mathf.RoundToInt(((float)width / 2.0f));
+            int halfHeight = Mathf.RoundToInt(((float)height / 2.0f));
+
+            for(int x = -halfWidth; x <= halfWidth; x++) {
+                for(int y = -halfHeight; y <= halfHeight; y++) {
+                    positionsInRoom.Add(new Vector2(x,y));
+                }
+            }
+        }
+
+        public void SetCenterPosition(Vector2 _centerPosition) {
+            m_centerPosition = _centerPosition;
+        }
+
+        public List<Vector2> GetWorldPositions() {
+            List<Vector2> worldPositions = new List<Vector2>();
+
+            foreach(Vector2 position in positionsInRoom) {
+                worldPositions.Add(m_centerPosition + position);
+            }
+
+            return worldPositions;
+        }
+    }
+
+    public class DungeonGeneration : MonoBehaviour {
         [Header("GameObjects for Tilemap")]
         public GameObject groundGameObjectTile;
         public GameObject wallGameObjectTile;
@@ -45,8 +74,7 @@ namespace FourthDimension.Dungeon {
         private const int km_amountAlloweedToExceedTilemap = 0;
         // -----------------------------------------------------
 
-        private List<Room> m_rooms;
-        private EDungeonTiles[,] m_abstractedDungeonTiles;
+        private EDungeonTile[,] m_abstractedDungeonTiles;
         private DungeonTile[,] m_consolidatedDungeonTiles;
 
         private readonly List<Vector2> m_cardinalMoves = new List<Vector2> {
@@ -57,14 +85,72 @@ namespace FourthDimension.Dungeon {
         };
 
         private void Awake() {
-            m_rooms = new List<Room>();
+            m_abstractedDungeonTiles = new EDungeonTile[km_stageWidth, km_stageHeight];
+            m_consolidatedDungeonTiles = new DungeonTile[km_stageWidth, km_stageHeight];
             GenerateDungeon();
         }
 
         private void GenerateDungeon() {
+            for(int i = 0; i < km_stageWidth; i++) {
+                for(int j = 0; j < km_stageHeight; j++) {
+                    m_abstractedDungeonTiles[i, j] = EDungeonTile.WALL;
+                }
+            }
+
+            Room starterRoom = CreateARoom();
+            starterRoom.SetCenterPosition(new Vector2(km_stageWidth / 2, km_stageHeight / 2));
+            ConsolidateRoom(starterRoom);
             // Start with a room
             // add another room
             // repeat until level is full
+
+            GenerateDungeonTiles();
+        }
+
+        private Room CreateARoom() {
+            int roomWidth = Random.Range(km_minRoomSize, km_maxRoomSize);
+            int roomHeight = Random.Range(km_minRoomSize, km_maxRoomSize);
+            Room createdRoom = new Room(roomWidth, roomHeight);
+
+            return createdRoom;
+        }
+
+        private void ConsolidateRoom(Room _roomToConsolidate) {
+            List<Vector2> positionsToConsolidate = _roomToConsolidate.GetWorldPositions();
+            foreach(Vector2 position in positionsToConsolidate) {
+                m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.FLOOR;
+            }
+        }
+
+        private void GenerateDungeonTiles() {
+            for(int x = 0; x < km_stageWidth; x++) {
+                for(int y = 0; y < km_stageHeight; y++) {
+                    DungeonTile dungeonTile;
+                    // TODO => DOOR
+
+                    if(m_abstractedDungeonTiles[x,y] == EDungeonTile.WALL) {
+                        dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(wallTilesParent);
+                        dungeonTile.InitializeTile(new Vector2(x, y), true);
+                    } else {
+                        dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(groundTilesParent);
+                        dungeonTile.InitializeTile(new Vector2(x, y));
+                    }
+
+                    m_consolidatedDungeonTiles[x, y] = dungeonTile;
+                }
+            }
+        }
+
+        public void RevealAllTiles() {
+            for(int x = 0; x < km_stageWidth; x++) {
+                for(int y = 0; y < km_stageHeight; y++) {
+                    m_consolidatedDungeonTiles[x, y].IsVisible = true;
+                    m_consolidatedDungeonTiles[x, y].WasTileDiscovered = true;
+                    m_consolidatedDungeonTiles[x, y].UpdateTile();
+                }
+            }
         }
     }
 }
