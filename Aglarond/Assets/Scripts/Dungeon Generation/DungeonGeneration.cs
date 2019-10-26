@@ -403,8 +403,9 @@ namespace FourthDimension.Dungeon {
         #region Cleanup and Tile Generation
         private void CleanupDungeon() {
             for(int x = 0; x < km_stageWidth; x++) {
-                for(int y = 0; y < km_stageHeight; y++) {
-                    if(m_abstractedDungeonTiles[x,y] == EDungeonTile.DOOR_CANDIDATE) {
+                for (int y = 0; y < km_stageHeight; y++) {
+                    if (m_abstractedDungeonTiles[x, y] == EDungeonTile.DOOR_CANDIDATE ||
+                        x == 0 || y == 0 || x == km_stageWidth - 1 || y == km_stageHeight - 1) {
                         m_abstractedDungeonTiles[x, y] = EDungeonTile.WALL;
                     }
                 }
