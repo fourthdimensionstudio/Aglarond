@@ -35,9 +35,16 @@ namespace FourthDimension.Dungeon {
                 m_centerPosition = value;
             }
         }
+        private bool m_hasHallway = false;
+        public bool HasHallway {
+            get {
+                return m_hasHallway;
+            }
+        }
 
         public List<Vector2> positionsInRoom;
         public List<DoorCandidate> doorCandidates;
+        private List<DoorCandidate> m_unusedDoors;
 
         public Room(int _width, int _height) {
             width = _width;
@@ -45,6 +52,7 @@ namespace FourthDimension.Dungeon {
             m_centerPosition = Vector2.zero;
             positionsInRoom = new List<Vector2>();
             doorCandidates = new List<DoorCandidate>();
+            m_unusedDoors = new List<DoorCandidate>();
 
             int halfWidth = Mathf.RoundToInt(((float)width / 2.0f));
             int halfHeight = Mathf.RoundToInt(((float)height / 2.0f));
@@ -62,13 +70,104 @@ namespace FourthDimension.Dungeon {
             doorCandidates.Add(new DoorCandidate(new Vector2(-halfWidth - 1, Random.Range(-halfHeight + 2, halfHeight - 1)), Vector2.left));
         }
 
+        public void MakeCellullarAutomata() {
+            // TODO remove all the magic numbers here
+            width = 8;
+            height = 8;
+            positionsInRoom.Clear();
+            doorCandidates.Clear();
+
+            Vector2 startingPosition = Vector2.zero;
+            int halfWidth = Mathf.RoundToInt( ((float)width / 2.0f) );
+            int halfHeight = Mathf.RoundToInt( ((float)height / 2.0f) );
+            for(int x = -halfWidth; x <= halfWidth; x++) {
+                for(int y = -halfHeight; y <= halfHeight; y++) {
+                    if(Random.value < 0.7f) {
+                        positionsInRoom.Add(new Vector2(x, y));
+                    }
+                }
+            }
+
+            for(int i = 0; i < 5; i++) {
+                for (int x = -halfWidth; x <= halfWidth; x++) {
+                    for (int y = -halfHeight; y <= halfHeight; y++) {
+                        Vector2 currentPosition = new Vector2(x, y);
+
+                        if(positionsInRoom.Contains(currentPosition)) {
+                            if(GetNumberOfNeighbors(currentPosition) < 4) {
+                                positionsInRoom.Remove(currentPosition);
+                            }
+                        } else {
+                            if(GetNumberOfNeighbors(currentPosition) >= 5) {
+                                positionsInRoom.Add(currentPosition);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            // Placing Doors
+            Vector2 tileMostToTheRight = Vector2.zero;
+            Vector2 tileMostToTheLeft = Vector2.zero;
+            Vector2 tileMostUp = Vector2.zero;
+            Vector2 tileMostDown = Vector2.zero;
+
+            foreach(Vector2 tilePosition in positionsInRoom) {
+                if(tilePosition.x > tileMostToTheRight.x) {
+                    tileMostToTheRight = tilePosition;
+                }
+
+                if (tilePosition.x < tileMostToTheLeft.x) {
+                    tileMostToTheLeft = tilePosition;
+                }
+
+                if (tilePosition.y > tileMostUp.y) {
+                    tileMostUp = tilePosition;
+                }
+
+                if (tilePosition.y < tileMostDown.y) {
+                    tileMostDown = tilePosition;
+                }
+            }
+
+            doorCandidates.Add(new DoorCandidate(tileMostToTheRight + Vector2.right, Vector2.right));
+            doorCandidates.Add(new DoorCandidate(tileMostDown + Vector2.down, Vector2.down));
+            doorCandidates.Add(new DoorCandidate(tileMostToTheLeft + Vector2.left, Vector2.left));
+            doorCandidates.Add(new DoorCandidate(tileMostUp + Vector2.up, Vector2.up));
+        }
+
+        private int GetNumberOfNeighbors(Vector2 _position) {
+            int numberOfNeighbours = 0;
+
+            if (positionsInRoom.Contains(_position + Vector2.up)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.up + Vector2.right)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.right)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.right + Vector2.down)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.down)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.down + Vector2.left)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.left)) numberOfNeighbours++;
+            if (positionsInRoom.Contains(_position + Vector2.left + Vector2.up)) numberOfNeighbours++;
+
+            return numberOfNeighbours;
+        }
+
         public void PlaceHallway() {
+            if(doorCandidates.Count == 0) {
+                return;
+            }
+
+            m_hasHallway = true;
             DoorCandidate doorToStartTheHallway = doorCandidates.RandomOrDefault();
+            doorCandidates.Remove(doorToStartTheHallway);
+            foreach(DoorCandidate doorCandidate in doorCandidates) {
+                m_unusedDoors.Add(doorCandidate);
+            }
             doorCandidates.Clear();
 
             // TODO make these constants up the class
-            int minHallwayLength = 3;
-            int maxHallwayLength = 6;
+            int minHallwayLength = 1;
+            int maxHallwayLength = 5;
             int hallwayLength = Random.Range(minHallwayLength, maxHallwayLength);
 
 
@@ -76,7 +175,6 @@ namespace FourthDimension.Dungeon {
                 positionsInRoom.Add(doorToStartTheHallway.doorPosition + (i * doorToStartTheHallway.doorDirection));
             }
 
-            // place doors on three directions
             Vector2 lastPlacedPosition = positionsInRoom.Last();
             if(doorToStartTheHallway.doorDirection == Vector2.up) {
                 doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.up, Vector2.up));
@@ -87,6 +185,14 @@ namespace FourthDimension.Dungeon {
             } else if(doorToStartTheHallway.doorDirection == Vector2.left) {
                 doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.left, Vector2.left));
             }
+        }
+
+        public void RestoreUnusedDoors() {
+            foreach(DoorCandidate door in m_unusedDoors) {
+                doorCandidates.Add(door);
+            }
+
+            m_unusedDoors.Clear();
         }
 
         public List<Vector2> GetWorldPositions() {
@@ -181,6 +287,12 @@ namespace FourthDimension.Dungeon {
             // repeat until level is full
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 Room roomBeingAdded = CreateARoom();
+
+                if(roomBeingAdded.positionsInRoom.Count < 20) {
+                    Debug.Log($"Room is too small... will not be placed.");
+                    continue;
+                }
+
                 Room roomToAttachTo = m_rooms.RandomOrDefault();
                 PlaceRoom(roomBeingAdded, roomToAttachTo);
             }
@@ -194,6 +306,11 @@ namespace FourthDimension.Dungeon {
             int roomWidth = Random.Range(km_minRoomSize, km_maxRoomSize);
             int roomHeight = Random.Range(km_minRoomSize, km_maxRoomSize);
             Room createdRoom = new Room(roomWidth, roomHeight);
+
+            if(Random.value < 0.33f) {
+                Debug.Log($"Making a Celullar Automata");
+                createdRoom.MakeCellullarAutomata();
+            }
 
             if(Random.value < 0.8f) {
                 Debug.Log($"Placing Hallway on Room");
@@ -248,6 +365,11 @@ namespace FourthDimension.Dungeon {
                         _roomBeingPlaced.doorCandidates.RemoveAt(i);
                         _connectedRoom.doorCandidates.RemoveAt(j);
                         m_rooms.Add(_roomBeingPlaced);
+
+                        if(_roomBeingPlaced.HasHallway) {
+                            _roomBeingPlaced.RestoreUnusedDoors();
+                        }
+
                         return;
                     }
                 }
