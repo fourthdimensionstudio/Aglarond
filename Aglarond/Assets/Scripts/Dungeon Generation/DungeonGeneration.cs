@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -9,6 +10,16 @@ namespace FourthDimension.Dungeon {
         FLOOR,
         DOOR_CANDIDATE,
         DOOR
+    }
+
+    public class DoorCandidate {
+        public Vector2 doorPosition;
+        public Vector2 doorDirection;
+
+        public DoorCandidate(Vector2 _doorPosition, Vector2 _doorDirection) {
+            doorPosition = _doorPosition;
+            doorDirection = _doorDirection;
+        }
     }
 
     [System.Serializable]
@@ -26,14 +37,14 @@ namespace FourthDimension.Dungeon {
         }
 
         public List<Vector2> positionsInRoom;
-        public List<Vector2> doorCandidates;
+        public List<DoorCandidate> doorCandidates;
 
         public Room(int _width, int _height) {
             width = _width;
             height = _height;
             m_centerPosition = Vector2.zero;
             positionsInRoom = new List<Vector2>();
-            doorCandidates = new List<Vector2>();
+            doorCandidates = new List<DoorCandidate>();
 
             int halfWidth = Mathf.RoundToInt(((float)width / 2.0f));
             int halfHeight = Mathf.RoundToInt(((float)height / 2.0f));
@@ -45,10 +56,37 @@ namespace FourthDimension.Dungeon {
             }
 
             // at this point, this is a square room, adding door candidates
-            doorCandidates.Add(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), halfHeight + 1));
-            doorCandidates.Add(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), -halfHeight - 1));
-            doorCandidates.Add(new Vector2(halfWidth + 1, Random.Range(-halfHeight + 2, halfHeight - 1)));
-            doorCandidates.Add(new Vector2(-halfWidth - 1, Random.Range(-halfHeight + 2, halfHeight - 1)));
+            doorCandidates.Add(new DoorCandidate(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), halfHeight + 1), Vector2.up));
+            doorCandidates.Add(new DoorCandidate(new Vector2(Random.Range(-halfWidth + 1, halfWidth - 2), -halfHeight - 1), Vector2.down));
+            doorCandidates.Add(new DoorCandidate(new Vector2(halfWidth + 1, Random.Range(-halfHeight + 2, halfHeight - 1)), Vector2.right));
+            doorCandidates.Add(new DoorCandidate(new Vector2(-halfWidth - 1, Random.Range(-halfHeight + 2, halfHeight - 1)), Vector2.left));
+        }
+
+        public void PlaceHallway() {
+            DoorCandidate doorToStartTheHallway = doorCandidates.RandomOrDefault();
+            doorCandidates.Clear();
+
+            // TODO make these constants up the class
+            int minHallwayLength = 3;
+            int maxHallwayLength = 6;
+            int hallwayLength = Random.Range(minHallwayLength, maxHallwayLength);
+
+
+            for(int i = 0; i < hallwayLength; i++) {
+                positionsInRoom.Add(doorToStartTheHallway.doorPosition + (i * doorToStartTheHallway.doorDirection));
+            }
+
+            // place doors on three directions
+            Vector2 lastPlacedPosition = positionsInRoom.Last();
+            if(doorToStartTheHallway.doorDirection == Vector2.up) {
+                doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.up, Vector2.up));
+            } else if(doorToStartTheHallway.doorDirection == Vector2.right) {
+                doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.right, Vector2.right));
+            } else if(doorToStartTheHallway.doorDirection == Vector2.down) {
+                doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.down, Vector2.down));
+            } else if(doorToStartTheHallway.doorDirection == Vector2.left) {
+                doorCandidates.Add(new DoorCandidate(lastPlacedPosition + Vector2.left, Vector2.left));
+            }
         }
 
         public List<Vector2> GetWorldPositions() {
@@ -61,11 +99,11 @@ namespace FourthDimension.Dungeon {
             return worldPositions;
         }
 
-        public List<Vector2> GetDoorsInWorldPosition() {
-            List<Vector2> doorWorldPositions = new List<Vector2>();
+        public List<DoorCandidate> GetDoorsInWorldPosition() {
+            List<DoorCandidate> doorWorldPositions = new List<DoorCandidate>();
 
-            foreach(Vector2 door in doorCandidates) {
-                doorWorldPositions.Add(m_centerPosition + door);
+            foreach(DoorCandidate door in doorCandidates) {
+                doorWorldPositions.Add(new DoorCandidate(m_centerPosition + door.doorPosition, door.doorDirection));
             }
 
             return doorWorldPositions;
@@ -133,14 +171,14 @@ namespace FourthDimension.Dungeon {
                 }
             }
 
-            Room starterRoom = CreateARoom();
+            Room starterRoom = new Room(Random.Range(km_minRoomSize, km_maxRoomSize), Random.Range(km_minRoomSize, km_maxRoomSize));
             starterRoom.CenterPosition = new Vector2(km_stageWidth / 2, km_stageHeight / 2);
             ConsolidateRoom(starterRoom);
             m_rooms.Add(starterRoom);
             m_starterRoom = starterRoom;
+
             // add another room
             // repeat until level is full
-
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 Room roomBeingAdded = CreateARoom();
                 Room roomToAttachTo = m_rooms.RandomOrDefault();
@@ -151,46 +189,37 @@ namespace FourthDimension.Dungeon {
             GenerateDungeonTiles();
         }
 
+        #region Room Generation and Placement
         private Room CreateARoom() {
             int roomWidth = Random.Range(km_minRoomSize, km_maxRoomSize);
             int roomHeight = Random.Range(km_minRoomSize, km_maxRoomSize);
             Room createdRoom = new Room(roomWidth, roomHeight);
 
-            // TODO have a chance to create a hallway
+            if(Random.value < 0.8f) {
+                Debug.Log($"Placing Hallway on Room");
+                createdRoom.PlaceHallway();
+            }
 
             return createdRoom;
         }
 
-        private void ConsolidateRoom(Room _roomToConsolidate) {
-            List<Vector2> positionsToConsolidate = _roomToConsolidate.GetWorldPositions();
-            List<Vector2> doorPositions = _roomToConsolidate.GetDoorsInWorldPosition();
-
-            foreach (Vector2 position in positionsToConsolidate) {
-                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
-                    continue;
-                }
-
-                m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.FLOOR;
-            }
-
-            foreach(Vector2 position in doorPositions) {
-                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
-                    continue;
-                }
-
-                m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.DOOR_CANDIDATE;
-            }
-        }
-
         private void PlaceRoom(Room _roomBeingPlaced, Room _connectedRoom) {
-            List<Vector2> connectedRoomDoorPositions = _connectedRoom.GetDoorsInWorldPosition();
-            List<Vector2> roomBeingPlacedDoorPositions = _roomBeingPlaced.GetDoorsInWorldPosition(); // right now, the room being placed is centered on (0,0)
+            List<DoorCandidate> connectedRoomDoorPositions = _connectedRoom.GetDoorsInWorldPosition();
+            List<DoorCandidate> roomBeingPlacedDoorPositions = _roomBeingPlaced.GetDoorsInWorldPosition(); // right now, the room being placed is centered on (0,0)
             List<Vector2> roomBeingPlacedPositions = _roomBeingPlaced.GetWorldPositions();
 
 
             for(int i = 0; i < roomBeingPlacedDoorPositions.Count; i++) {
                 for(int j = 0; j < connectedRoomDoorPositions.Count; j++) {
-                    Vector2 centerCandidate = connectedRoomDoorPositions[j] - roomBeingPlacedDoorPositions[i];
+                    Vector2 centerCandidate = connectedRoomDoorPositions[j].doorPosition - roomBeingPlacedDoorPositions[i].doorPosition;
+
+                    if(roomBeingPlacedDoorPositions[i].doorDirection == Vector2.right && connectedRoomDoorPositions[j].doorDirection != Vector2.left ||
+                        roomBeingPlacedDoorPositions[i].doorDirection == Vector2.down && connectedRoomDoorPositions[j].doorDirection != Vector2.up ||
+                        roomBeingPlacedDoorPositions[i].doorDirection == Vector2.left && connectedRoomDoorPositions[j].doorDirection != Vector2.right ||
+                        roomBeingPlacedDoorPositions[i].doorDirection == Vector2.up && connectedRoomDoorPositions[j].doorDirection != Vector2.down) {
+                        continue;
+                    }
+
                     // Debug.Log($"Center Candidate: {centerCandidate}");
                     // Debug.Log($"Door Position on Room Being Placed: {centerCandidate + roomBeingPlacedDoorPositions[i]} - Door Position on Room being connected: {connectedRoomDoorPositions[j]}");
 
@@ -198,15 +227,15 @@ namespace FourthDimension.Dungeon {
                     foreach(Vector2 position in roomBeingPlacedPositions) {
                         int xPositionToCheck = (int)(centerCandidate.x + position.x);
                         int yPositionToCheck = (int)(centerCandidate.y + position.y);
-
+                        
+                        // Checking if room is not out of bounds
                         if(xPositionToCheck < 0 || xPositionToCheck >= km_stageWidth || yPositionToCheck < 0 || yPositionToCheck >= km_stageHeight) {
-                            // Debug.Log($"Cannot be placed because it is out of bounds!");
                             canRoomBePlaced = false;
                             break;
                         }
 
+                        // Checking if there is a tile on this position that is not a wall
                         if(m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck] != EDungeonTile.WALL) {
-                            // Debug.Log($"Cannot place room here because there is a {m_abstractedDungeonTiles[xPositionToCheck, yPositionToCheck]}");
                             canRoomBePlaced = false;
                             break;
                         }
@@ -215,7 +244,7 @@ namespace FourthDimension.Dungeon {
                     if(canRoomBePlaced) {
                         _roomBeingPlaced.CenterPosition = centerCandidate;
                         ConsolidateRoom(_roomBeingPlaced);
-                        m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].x, (int)connectedRoomDoorPositions[j].y] = EDungeonTile.DOOR;
+                        m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].doorPosition.x, (int)connectedRoomDoorPositions[j].doorPosition.y] = EDungeonTile.DOOR;
                         _roomBeingPlaced.doorCandidates.RemoveAt(i);
                         _connectedRoom.doorCandidates.RemoveAt(j);
                         m_rooms.Add(_roomBeingPlaced);
@@ -225,6 +254,31 @@ namespace FourthDimension.Dungeon {
             }
         }
 
+        private void ConsolidateRoom(Room _roomToConsolidate) {
+            List<Vector2> positionsToConsolidate = _roomToConsolidate.GetWorldPositions();
+            List<DoorCandidate> doorPositions = _roomToConsolidate.GetDoorsInWorldPosition();
+
+            foreach (Vector2 position in positionsToConsolidate) {
+                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
+                    continue;
+                }
+
+                m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.FLOOR;
+            }
+
+            foreach (DoorCandidate door in doorPositions) {
+                Vector2 position = door.doorPosition;
+
+                if (position.x < 0 || position.x >= km_stageWidth || position.y < 0 || position.y >= km_stageHeight) {
+                    continue;
+                }
+
+                m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.DOOR_CANDIDATE;
+            }
+        }
+        #endregion
+
+        #region Cleanup and Tile Generation
         private void CleanupDungeon() {
             for(int x = 0; x < km_stageWidth; x++) {
                 for(int y = 0; y < km_stageHeight; y++) {
@@ -274,7 +328,9 @@ namespace FourthDimension.Dungeon {
                 }
             }
         }
+        #endregion
 
+        #region Helper Functions
         public void RevealAllTiles() {
             for(int x = 0; x < km_stageWidth; x++) {
                 for(int y = 0; y < km_stageHeight; y++) {
@@ -292,5 +348,6 @@ namespace FourthDimension.Dungeon {
 
             return null;
         }
+        #endregion
     }
 }
