@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 namespace FourthDimension.Dungeon {
     enum EDungeonTile {
         WALL,
+        BOTTOM_WALL,
         FLOOR,
         DOOR_CANDIDATE,
         DOOR
@@ -220,6 +221,7 @@ namespace FourthDimension.Dungeon {
         [Header("GameObjects for Tilemap")]
         public GameObject groundGameObjectTile;
         public GameObject wallGameObjectTile;
+        public GameObject bottomWallGameObjectTile;
         public GameObject doorTile;
 
         [Header("Organization")]
@@ -408,6 +410,8 @@ namespace FourthDimension.Dungeon {
                         x == 0 || y == 0 || x == km_stageWidth - 1 || y == km_stageHeight - 1) {
                         m_abstractedDungeonTiles[x, y] = EDungeonTile.WALL;
                     }
+
+                    // TODO BOTTOM WALLS
                 }
             }
         }
@@ -433,16 +437,20 @@ namespace FourthDimension.Dungeon {
                 for(int y = 0; y < km_stageHeight; y++) {
                     DungeonTile dungeonTile = null;
 
-                    if(m_abstractedDungeonTiles[x,y] == EDungeonTile.WALL) {
+                    if (m_abstractedDungeonTiles[x, y] == EDungeonTile.WALL) {
                         dungeonTile = Instantiate(wallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(wallTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y), true);
-                    } else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.DOOR) {
+                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.BOTTOM_WALL) {
+                        dungeonTile = Instantiate(bottomWallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(wallTilesParent);
+                        dungeonTile.InitializeTile(new Vector2(x, y), false);
+                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.DOOR) {
                         dungeonTile = Instantiate(doorTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));
                         dungeonTile.BlockVision = true;
-                    }  else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.FLOOR) {
+                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.FLOOR) {
                         dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));

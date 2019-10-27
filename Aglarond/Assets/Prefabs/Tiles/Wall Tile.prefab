@@ -95,11 +95,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8518a98d5fe6d4543add31904cf27caf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totallyVisibleSprite: {fileID: -2665318841108357926, guid: 37fd4ebc828243e49b33761941550332,
+  totallyVisibleSprite: {fileID: 408625319150127616, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}
-  partiallyVisibleSprite: {fileID: -2665318841108357926, guid: 37fd4ebc828243e49b33761941550332,
+  partiallyVisibleSprite: {fileID: 408625319150127616, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}
-  nonVisibleSprite: {fileID: -2665318841108357926, guid: 37fd4ebc828243e49b33761941550332,
+  nonVisibleSprite: {fileID: 408625319150127616, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}
   totallyVisibleColor: {r: 1, g: 1, b: 1, a: 1}
   partiallyVisibleColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}

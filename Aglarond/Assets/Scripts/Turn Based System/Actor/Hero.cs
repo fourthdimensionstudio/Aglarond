@@ -28,7 +28,7 @@ namespace FourthDimension.TurnBased.Actor {
             });
 
             OnActorInteracted += (() => {
-                ShakeScreen(.33f);
+                ShakeScreen(.5f);
             });
 
             m_fieldOfView.InitializeFieldOfView(m_currentPosition);
