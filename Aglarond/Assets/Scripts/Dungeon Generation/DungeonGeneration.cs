@@ -411,7 +411,11 @@ namespace FourthDimension.Dungeon {
                         m_abstractedDungeonTiles[x, y] = EDungeonTile.WALL;
                     }
 
-                    // TODO BOTTOM WALLS
+                    if(m_abstractedDungeonTiles[x, y] == EDungeonTile.WALL && y > 0) {
+                        if(m_abstractedDungeonTiles[x, y - 1] == EDungeonTile.FLOOR && y < km_stageHeight - 1 && m_abstractedDungeonTiles[x, y + 1] == EDungeonTile.WALL) {
+                            m_abstractedDungeonTiles[x, y] = EDungeonTile.BOTTOM_WALL;
+                        }
+                    }
                 }
             }
         }
