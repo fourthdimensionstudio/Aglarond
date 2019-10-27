@@ -10,7 +10,8 @@ namespace FourthDimension.Dungeon {
         BOTTOM_WALL,
         FLOOR,
         DOOR_CANDIDATE,
-        DOOR
+        DOOR_VERTICAL,
+        DOOR_HORIZONTAL
     }
 
     public class DoorCandidate {
@@ -223,6 +224,7 @@ namespace FourthDimension.Dungeon {
         public GameObject wallGameObjectTile;
         public GameObject bottomWallGameObjectTile;
         public GameObject doorTile;
+        public GameObject doorHorizontalTile;
 
         [Header("Organization")]
         public Transform groundTilesParent;
@@ -363,7 +365,12 @@ namespace FourthDimension.Dungeon {
                     if(canRoomBePlaced) {
                         _roomBeingPlaced.CenterPosition = centerCandidate;
                         ConsolidateRoom(_roomBeingPlaced);
-                        m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].doorPosition.x, (int)connectedRoomDoorPositions[j].doorPosition.y] = EDungeonTile.DOOR;
+                        if(connectedRoomDoorPositions[j].doorDirection == Vector2.left || connectedRoomDoorPositions[j].doorDirection == Vector2.right) {
+                            m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].doorPosition.x, (int)connectedRoomDoorPositions[j].doorPosition.y] = EDungeonTile.DOOR_HORIZONTAL;
+                        } else {
+                            m_abstractedDungeonTiles[(int)connectedRoomDoorPositions[j].doorPosition.x, (int)connectedRoomDoorPositions[j].doorPosition.y] = EDungeonTile.DOOR_VERTICAL;
+                        }
+
                         _roomBeingPlaced.doorCandidates.RemoveAt(i);
                         _connectedRoom.doorCandidates.RemoveAt(j);
                         m_rooms.Add(_roomBeingPlaced);
@@ -411,11 +418,14 @@ namespace FourthDimension.Dungeon {
                         m_abstractedDungeonTiles[x, y] = EDungeonTile.WALL;
                     }
 
+                    /*
                     if(m_abstractedDungeonTiles[x, y] == EDungeonTile.WALL && y > 0) {
-                        if(m_abstractedDungeonTiles[x, y - 1] == EDungeonTile.FLOOR && y < km_stageHeight - 1 && m_abstractedDungeonTiles[x, y + 1] == EDungeonTile.WALL) {
+                        if(m_abstractedDungeonTiles[x, y - 1] == EDungeonTile.FLOOR && y < km_stageHeight - 1 && m_abstractedDungeonTiles[x, y + 1] == EDungeonTile.WALL &&
+                            (m_abstractedDungeonTiles[x + 1, y + 1] == EDungeonTile.WALL || m_abstractedDungeonTiles[x - 1, y + 1] == EDungeonTile.WALL )) {
                             m_abstractedDungeonTiles[x, y] = EDungeonTile.BOTTOM_WALL;
                         }
                     }
+                    */
                 }
             }
         }
@@ -449,8 +459,13 @@ namespace FourthDimension.Dungeon {
                         dungeonTile = Instantiate(bottomWallGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(wallTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y), false);
-                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.DOOR) {
+                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.DOOR_VERTICAL) {
                         dungeonTile = Instantiate(doorTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
+                        dungeonTile.transform.SetParent(groundTilesParent);
+                        dungeonTile.InitializeTile(new Vector2(x, y));
+                        dungeonTile.BlockVision = true;
+                    } else if (m_abstractedDungeonTiles[x, y] == EDungeonTile.DOOR_HORIZONTAL) {
+                        dungeonTile = Instantiate(doorHorizontalTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));
                         dungeonTile.BlockVision = true;

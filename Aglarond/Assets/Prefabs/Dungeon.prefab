@@ -202,7 +202,11 @@ MonoBehaviour:
     type: 3}
   wallGameObjectTile: {fileID: 1390835878392185794, guid: a6220a47995b3f2408ac004ec9352688,
     type: 3}
+  bottomWallGameObjectTile: {fileID: 7337673986396452907, guid: 157d9cfe11b0c134aa7bad2efd8143d0,
+    type: 3}
   doorTile: {fileID: 6752749683110287162, guid: 5dccddcb11a079145bd9ccef504ea0ce,
+    type: 3}
+  doorHorizontalTile: {fileID: 4250141636501557119, guid: 496f9f64f61f98c4a90cbba4bebc87d3,
     type: 3}
   groundTilesParent: {fileID: 1776646005}
   wallTilesParent: {fileID: 1101323117}
