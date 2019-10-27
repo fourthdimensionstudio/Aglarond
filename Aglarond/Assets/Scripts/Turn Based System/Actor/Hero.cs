@@ -23,8 +23,12 @@ namespace FourthDimension.TurnBased.Actor {
             m_fieldOfView = GetComponent<Roguelike.FieldOfView>();
             InitializeActor(EActorType.Player);
 
-            onActorAttacked += (() => {
+            OnActorAttacked += (() => {
                 ShakeScreen(.5f);
+            });
+
+            OnActorInteracted += (() => {
+                ShakeScreen(.33f);
             });
 
             m_fieldOfView.InitializeFieldOfView(m_currentPosition);

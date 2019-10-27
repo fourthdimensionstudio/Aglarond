@@ -36,8 +36,9 @@ namespace FourthDimension.TurnBased.Actor {
         private bool m_isActorCurrentlyMoving = false;
 
         // EVENTS
-        public event System.Action onActorAttacked;
-        public event System.Action onActorSufferedDamage;
+        public event System.Action OnActorAttacked;
+        public event System.Action OnActorSufferedDamage;
+        public event System.Action OnActorInteracted;
 
         public override void InitializeActor(EActorType _actorType) {
             base.InitializeActor(_actorType);
@@ -57,6 +58,7 @@ namespace FourthDimension.TurnBased.Actor {
         /// <param name="_movementDirection">Direction which agent will atempt to move</param>
         public void Move(Input.EMovementDirection _movementDirection) {
             Vector2 movementDirection = Input.InputUtilities.GetMovementVectorFromDirection(_movementDirection);
+
             // Handling Combat
             bool willEngageInCombat = WillEngageOnCombatOnMovement(movementDirection);
             bool canMoveOnDirection = false;
@@ -93,8 +95,16 @@ namespace FourthDimension.TurnBased.Actor {
 
             // TODO Handle Interfaces when player move to position ?
             Collider2D blockedCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, movementBlockedLayers);
+            Collider2D triggerCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, triggersLayers);
 
             if (blockedCollision) {
+                return false;
+            } else if(triggerCollision) {
+                IInteractAndNotMove interactAndNotMove = triggerCollision.GetComponent<IInteractAndNotMove>();
+
+                interactAndNotMove?.Interact();
+                ActorInteracted(.1f);
+                OnActorInteracted?.Invoke();
                 return false;
             }
 
@@ -142,6 +152,17 @@ namespace FourthDimension.TurnBased.Actor {
             movementSequence.Play();
         }
 
+        private void ActorInteracted(float _interactionTime) {
+            InitializeMovementAndAction(Vector2.zero);
+
+            Vector2 midwayPoint = m_currentPosition + (Vector2.up / 2.0f);
+            Sequence interactionSequence = DOTween.Sequence();
+            interactionSequence.Append(transform.DOMove(midwayPoint, _interactionTime / 2.0f).SetEase(Ease.InOutQuint));
+            interactionSequence.Append(transform.DOMove(m_currentPosition, _interactionTime / 2.0f).SetEase(Ease.InOutQuint));
+            interactionSequence.onComplete += OnMovementRoutineFinished;
+            interactionSequence.Play();
+        }
+
         private void InitializeMovementAndAction(Vector2 _direction) {
             m_isActorCurrentlyMoving = true;
 
@@ -163,7 +184,7 @@ namespace FourthDimension.TurnBased.Actor {
         /// </summary>
         public void ActorDealtDamage() {
             PlaySoundEffect(actorAttackedSounds.RandomOrDefault());
-            onActorAttacked?.Invoke();
+            OnActorAttacked?.Invoke();
         }
 
         /// <summary>
@@ -185,7 +206,7 @@ namespace FourthDimension.TurnBased.Actor {
                 }
 
                 PlaySoundEffect(actorDamagedSounds.RandomOrDefault());
-                onActorSufferedDamage?.Invoke();
+                OnActorSufferedDamage?.Invoke();
             }
         }
 

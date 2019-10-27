@@ -431,11 +431,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3833110372350766040, guid: d5df5cee9b5a5c84b95bf0abfcb0ecc3,
-        type: 3}
-      propertyPath: orthographic size
-      value: 7
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5df5cee9b5a5c84b95bf0abfcb0ecc3, type: 3}
 --- !u!1 &314089470
@@ -549,23 +544,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
-        type: 3}
-      propertyPath: enemyPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 6738284148149277498, guid: 15c6e819d56d82d46816d7f05d323b98,
-        type: 3}
-    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
-        type: 3}
-      propertyPath: monstersToSpawn
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
-        type: 3}
-      propertyPath: doorTile
-      value: 
-      objectReference: {fileID: 6752749683110287162, guid: 5dccddcb11a079145bd9ccef504ea0ce,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa03e2e01c9c31849a92338a418b0be6, type: 3}
 --- !u!224 &390732151 stripped
@@ -968,6 +946,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2583590186939138799, guid: 7ba4854241a5ddc4dad64e87da2a8c22,
+        type: 3}
+      propertyPath: triggersLayers.m_Bits
+      value: 512
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ba4854241a5ddc4dad64e87da2a8c22, type: 3}

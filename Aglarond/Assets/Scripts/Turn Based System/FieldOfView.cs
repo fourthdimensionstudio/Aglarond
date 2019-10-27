@@ -163,7 +163,7 @@ namespace FourthDimension.Roguelike {
                         }
                         
 
-                        if(visible && currentTile.IsWall) {
+                        if(visible && (currentTile.IsWall || currentTile.BlockVision)) {
                             line.AddShadowToLine(projection);
                             fullShadow = line.IsFullShadow;
                         }

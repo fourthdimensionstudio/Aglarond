@@ -441,6 +441,7 @@ namespace FourthDimension.Dungeon {
                         dungeonTile = Instantiate(doorTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);
                         dungeonTile.InitializeTile(new Vector2(x, y));
+                        dungeonTile.BlockVision = true;
                     }  else if(m_abstractedDungeonTiles[x,y] == EDungeonTile.FLOOR) {
                         dungeonTile = Instantiate(groundGameObjectTile, new Vector3(x, y, 0), Quaternion.identity).GetComponent<DungeonTile>();
                         dungeonTile.transform.SetParent(groundTilesParent);

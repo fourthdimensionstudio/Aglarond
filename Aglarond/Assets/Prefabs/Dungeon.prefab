@@ -202,10 +202,11 @@ MonoBehaviour:
     type: 3}
   wallGameObjectTile: {fileID: 1390835878392185794, guid: a6220a47995b3f2408ac004ec9352688,
     type: 3}
-  doorTile: {fileID: 0}
+  doorTile: {fileID: 6752749683110287162, guid: 5dccddcb11a079145bd9ccef504ea0ce,
+    type: 3}
   groundTilesParent: {fileID: 1776646005}
   wallTilesParent: {fileID: 1101323117}
-  monstersToSpawn: 50
+  monstersToSpawn: 10
   enemyPrefabs:
-  - {fileID: 3219326088926308601, guid: dd5d9b8470d18674e8e815a31263c040, type: 3}
+  - {fileID: 6738284148149277498, guid: 15c6e819d56d82d46816d7f05d323b98, type: 3}
   enemiesParent: {fileID: 2100771899}

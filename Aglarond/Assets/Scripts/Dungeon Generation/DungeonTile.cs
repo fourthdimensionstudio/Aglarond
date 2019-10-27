@@ -50,6 +50,16 @@ namespace FourthDimension.Dungeon {
             }
         }
 
+        private bool m_doesTileBlockVision;
+        public bool BlockVision {
+            get {
+                return m_doesTileBlockVision;
+            }
+            set {
+                m_doesTileBlockVision = value;
+            }
+        }
+
         public void InitializeTile(Vector2 _tilePosition, bool _isWall = false) {
             m_TilePosition = _tilePosition;
             m_spriteRenderer = GetComponent<SpriteRenderer>();

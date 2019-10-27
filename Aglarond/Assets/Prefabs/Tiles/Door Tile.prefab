@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 6752749683110287165}
   - component: {fileID: 6752749683110287167}
   - component: {fileID: 6752749683110287164}
-  m_Layer: 0
+  - component: {fileID: 5956640771164960829}
+  - component: {fileID: 5147905427992950417}
+  m_Layer: 9
   m_Name: Door Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,14 +96,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8518a98d5fe6d4543add31904cf27caf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totallyVisibleSprite: {fileID: 21300000, guid: db5b5d184ee6e1849bc306e8e2d8c246,
+  totallyVisibleSprite: {fileID: 1720441148300283431, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}
-  partiallyVisibleSprite: {fileID: 21300000, guid: db5b5d184ee6e1849bc306e8e2d8c246,
+  partiallyVisibleSprite: {fileID: 1720441148300283431, guid: 37fd4ebc828243e49b33761941550332,
     type: 3}
-  nonVisibleSprite: {fileID: 21300000, guid: db5b5d184ee6e1849bc306e8e2d8c246, type: 3}
-  totallyVisibleColor: {r: 0, g: 1, b: 1, a: 1}
+  nonVisibleSprite: {fileID: 1720441148300283431, guid: 37fd4ebc828243e49b33761941550332,
+    type: 3}
+  totallyVisibleColor: {r: 1, g: 1, b: 1, a: 1}
   partiallyVisibleColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
   nonVisibleColor: {r: 0, g: 0, b: 0, a: 1}
   visibleSpriteMask: Ground
   partiallyVisibleSpriteMask: Hidden
   nonVisibleSpriteMask: Unknown
+--- !u!114 &5956640771164960829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752749683110287162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f00078055ae345942b16ec10bfe80076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileAfterInteracted: {fileID: 8271284231223792029, guid: 37fd4ebc828243e49b33761941550332,
+    type: 3}
+--- !u!61 &5147905427992950417
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752749683110287162}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.1, y: 0.1}
+  m_EdgeRadius: 0
