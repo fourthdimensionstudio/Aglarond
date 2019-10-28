@@ -544,18 +544,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
-        type: 3}
-      propertyPath: bottomWallGameObjectTile
-      value: 
-      objectReference: {fileID: 7337673986396452907, guid: 157d9cfe11b0c134aa7bad2efd8143d0,
-        type: 3}
-    - target: {fileID: 1697163925578274386, guid: aa03e2e01c9c31849a92338a418b0be6,
-        type: 3}
-      propertyPath: doorHorizontalTile
-      value: 
-      objectReference: {fileID: 4250141636501557119, guid: 496f9f64f61f98c4a90cbba4bebc87d3,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa03e2e01c9c31849a92338a418b0be6, type: 3}
 --- !u!224 &390732151 stripped

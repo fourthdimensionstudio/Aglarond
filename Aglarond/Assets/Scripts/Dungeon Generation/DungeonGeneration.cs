@@ -260,13 +260,6 @@ namespace FourthDimension.Dungeon {
         private EDungeonTile[,] m_abstractedDungeonTiles;
         private DungeonTile[,] m_consolidatedDungeonTiles;
 
-        private readonly List<Vector2> m_cardinalMoves = new List<Vector2> {
-            Vector2.left,
-            Vector2.up,
-            Vector2.right,
-            Vector2.down
-        };
-
         private void Awake() {
             m_rooms = new List<Room>();
             m_abstractedDungeonTiles = new EDungeonTile[km_stageWidth, km_stageHeight];
@@ -303,6 +296,7 @@ namespace FourthDimension.Dungeon {
 
             CleanupDungeon();
             GenerateDungeonTiles();
+            PlaceEnemies();
         }
 
         #region Room Generation and Placement
@@ -477,6 +471,13 @@ namespace FourthDimension.Dungeon {
 
                     m_consolidatedDungeonTiles[x, y] = dungeonTile;
                 }
+            }
+        }
+
+        private void PlaceEnemies() {
+            for(int i = 0; i < monstersToSpawn; i++) {
+                Room roomToSpawn = m_rooms.RandomOrDefault();
+                Instantiate(enemyPrefabs.RandomOrDefault(), roomToSpawn.CenterPosition, Quaternion.identity, enemiesParent);
             }
         }
         #endregion
