@@ -176,7 +176,7 @@ MonoBehaviour:
   actorStat: {fileID: 11400000, guid: de5ae583cf241f8439b931bc52eab5d7, type: 2}
   movementBlockedLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 768
   triggersLayers:
     serializedVersion: 2
     m_Bits: 0

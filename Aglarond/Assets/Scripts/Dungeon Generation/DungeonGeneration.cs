@@ -37,6 +37,13 @@ namespace FourthDimension.Dungeon {
                 m_centerPosition = value;
             }
         }
+
+        public Vector2 RandomPosition {
+            get {
+                return CenterPosition + positionsInRoom.RandomOrDefault();
+            }
+        }
+
         private bool m_hasHallway = false;
         public bool HasHallway {
             get {
@@ -477,7 +484,7 @@ namespace FourthDimension.Dungeon {
         private void PlaceEnemies() {
             for(int i = 0; i < monstersToSpawn; i++) {
                 Room roomToSpawn = m_rooms.RandomOrDefault();
-                Instantiate(enemyPrefabs.RandomOrDefault(), roomToSpawn.CenterPosition, Quaternion.identity, enemiesParent);
+                Instantiate(enemyPrefabs.RandomOrDefault(), roomToSpawn.RandomPosition, Quaternion.identity, enemiesParent);
             }
         }
         #endregion
