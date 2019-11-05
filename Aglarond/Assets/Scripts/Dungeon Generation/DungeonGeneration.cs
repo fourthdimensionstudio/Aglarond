@@ -223,6 +223,39 @@ namespace FourthDimension.Dungeon {
 
             return doorWorldPositions;
         }
+
+        public bool IsRoomValid() {
+            List<Vector2> visitedPositions = new List<Vector2>();
+            Queue<Vector2> positionQueue = new Queue<Vector2>();
+
+            // Validating the room with flood fill
+            positionQueue.Enqueue(positionsInRoom.RandomOrDefault());
+            do {
+                Vector2 currentPosition = positionQueue.Dequeue();
+                visitedPositions.Add(currentPosition);
+
+                List<Vector2> positionsToCheck = new List<Vector2>() {
+                    currentPosition + Vector2.up,
+                    currentPosition + Vector2.right,
+                    currentPosition + Vector2.down,
+                    currentPosition + Vector2.left
+                };
+
+                foreach(Vector2 position in positionsToCheck) {
+                    // if this position is in room, we have not visited and if we are not going to visit...
+                    if(positionsInRoom.Contains(position) && !visitedPositions.Contains(position) && !positionQueue.Contains(position)) {
+                        positionQueue.Enqueue(position);
+                    }
+                }
+
+            } while (positionQueue.Count > 0);
+
+            if(visitedPositions.Count == positionsInRoom.Count) {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public class DungeonGeneration : MonoBehaviour {
@@ -291,6 +324,11 @@ namespace FourthDimension.Dungeon {
             // repeat until level is full
             for(int i = 0; i < km_attemptsToPlaceRoom; i++) {
                 Room roomBeingAdded = CreateARoom();
+
+                if(!roomBeingAdded.IsRoomValid()) {
+                    Debug.Log($"Room is invalid... will not be placed...");
+                    continue;
+                }
 
                 if(roomBeingAdded.positionsInRoom.Count < 20) {
                     Debug.Log($"Room is too small... will not be placed.");
