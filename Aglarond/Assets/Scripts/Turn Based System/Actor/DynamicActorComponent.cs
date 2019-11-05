@@ -97,6 +97,13 @@ namespace FourthDimension.TurnBased.Actor {
                 return false;
             }
 
+            // Checking if there is an actor on that position, if it's one of my types, I don't go there.
+            // Enemy AI uses this functions to know where to move beforehand, that's why this check is important.
+            DynamicActorComponent actorOnPosition = TurnBasedSystemManager.instance.WhatActorIsAtPosition(m_currentPosition + _movementDirection);
+            if(actorOnPosition != null && actorOnPosition.ActorType == m_actorType) {
+                return false;
+            }
+
             // TODO Handle Interfaces when player move to position ?
             Collider2D blockedCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, movementBlockedLayers);
             Collider2D triggerCollision = Physics2D.OverlapCircle(this.m_currentPosition + _movementDirection, 0.05f, triggersLayers);
