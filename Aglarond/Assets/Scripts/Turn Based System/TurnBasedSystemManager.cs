@@ -46,7 +46,9 @@ namespace FourthDimension.TurnBased {
         public void RemoveDynamicActorFromScene(Actor.DynamicActorComponent _dynamicActor) {
             m_dynamicActorsOnScene.Remove(_dynamicActor);
 
-            m_currentActorTurn = (m_currentActorTurn % m_dynamicActorsOnScene.Count);
+            if(m_dynamicActorsOnScene.Count > 0) {
+                m_currentActorTurn = (m_currentActorTurn % m_dynamicActorsOnScene.Count);
+            }
         }
 
         public bool IsThereAnActorAt(Vector2 _positionToCheck) {
@@ -79,7 +81,9 @@ namespace FourthDimension.TurnBased {
         #region TURN BASED SYSTEM
         private void ProcessCurrentActorTurn() {
             if(m_dynamicActorsOnScene[m_currentActorTurn].HasTakenTurn()) {
-                m_currentActorTurn = ((m_currentActorTurn + 1) % m_dynamicActorsOnScene.Count);
+                if(m_dynamicActorsOnScene.Count > 0) {
+                    m_currentActorTurn = ((m_currentActorTurn + 1) % m_dynamicActorsOnScene.Count);
+                }
             }
         }
         #endregion

@@ -73,6 +73,10 @@ namespace FourthDimension.TurnBased.Actor {
         #endregion
 
         private bool WillEngageOnCombatOnMovement(Vector2 _movementDirection) {
+            if(_movementDirection == Vector2.zero) {
+                return false;
+            }
+
             Vector2 positionToAttack = m_currentPosition + _movementDirection;
             DynamicActorComponent actorToInteractWith = TurnBasedSystemManager.instance.WhatActorIsAtPosition(positionToAttack);
 
