@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 
 namespace FourthDimension.UI {
     public class UserInterfaceManager : MonoBehaviour {
+        [Header("Heads Up Display")]
+        public TextMeshProUGUI playerHealthText;
+
         private FeedbackText[] m_feedbackTexts;
         private Camera m_mainCameraReference;
 
         private void Awake() {
             m_feedbackTexts = GetComponentsInChildren<FeedbackText>();
             m_mainCameraReference = Camera.main;
+            FindObjectOfType<TurnBased.Actor.Hero>().OnHeroHealthChanged += UpdateHealthTextOnScreen;
         }
 
         /// <summary>
@@ -27,6 +30,12 @@ namespace FourthDimension.UI {
             }
         }
 
+        /*
+         * HUD
+         */
+        private void UpdateHealthTextOnScreen(float _currentHealth, float _maxHealth) {
+            playerHealthText.text = $"HP: {_currentHealth}/{_maxHealth}";
+        }
 
     }
 }

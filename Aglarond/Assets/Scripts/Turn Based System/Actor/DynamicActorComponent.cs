@@ -191,7 +191,7 @@ namespace FourthDimension.TurnBased.Actor {
         /// <para>Perform necessary logic when actor suffered damage</para>
         /// </summary>
         /// <param name="_damage">Amount of damage suffered</param>
-        public void ActorSufferedDamage(int _damage) {
+        public virtual void ActorSufferedDamage(int _damage) {
             m_currentHealth -= _damage;
 
             if(actorHitParticles) {

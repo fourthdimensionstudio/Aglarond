@@ -11,9 +11,16 @@ namespace FourthDimension.TurnBased.Actor {
         private Input.EMovementDirection m_currentMovementDirection;
         private Roguelike.FieldOfView m_fieldOfView;
 
+        public delegate void HealthDelegate(float _newHealth, float _totalHealth);
+        public event HealthDelegate OnHeroHealthChanged;
+
         private void Awake() {
             // DEBUGGING
             // InitializeHero();
+        }
+
+        private void Start() {
+            OnHeroHealthChanged?.Invoke(actorStat.maxHealth, actorStat.maxHealth);
         }
 
         public void InitializeHero() {
@@ -46,6 +53,11 @@ namespace FourthDimension.TurnBased.Actor {
             Move(m_currentMovementDirection);
             m_fieldOfView.RefreshVisibility(m_currentPosition);
             return true;
+        }
+
+        public override void ActorSufferedDamage(int _damage) {
+            base.ActorSufferedDamage(_damage);
+            OnHeroHealthChanged?.Invoke(m_currentHealth, actorStat.maxHealth);
         }
     }
 }
