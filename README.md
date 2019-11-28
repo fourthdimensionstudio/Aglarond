@@ -13,3 +13,5 @@ Postmortem posts are being written for the Turn Based System and for my Roguelik
 [What is Aglarond?](https://fourthdimension.studio/devlog/2019-09-15-What-is-Aglarond/)
 
 [Tiles and Field of View for Aglarond](https://fourthdimension.studio/devlog/2019-10-06-Tiles-and-Field-of-View-for-Aglarond/)
+
+[Turn-Based System for Aglarond](https://fourthdimension.studio/devlog/2019-11-27-Turn-Based-System-Aglarond/)
