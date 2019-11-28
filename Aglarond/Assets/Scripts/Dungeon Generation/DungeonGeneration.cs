@@ -344,7 +344,7 @@ namespace FourthDimension.Dungeon {
             PlaceEnemies();
         }
 
-        #region Room Generation and Placement
+#region Room Generation and Placement
         private Room CreateARoom() {
             int roomWidth = Random.Range(km_minRoomSize, km_maxRoomSize);
             int roomHeight = Random.Range(km_minRoomSize, km_maxRoomSize);
@@ -446,9 +446,9 @@ namespace FourthDimension.Dungeon {
                 m_abstractedDungeonTiles[(int)position.x, (int)position.y] = EDungeonTile.DOOR_CANDIDATE;
             }
         }
-        #endregion
+#endregion
 
-        #region Cleanup and Tile Generation
+#region Cleanup and Tile Generation
         private void CleanupDungeon() {
             for(int x = 0; x < km_stageWidth; x++) {
                 for (int y = 0; y < km_stageHeight; y++) {
@@ -525,9 +525,9 @@ namespace FourthDimension.Dungeon {
                 Instantiate(enemyPrefabs.RandomOrDefault(), roomToSpawn.RandomPosition, Quaternion.identity, enemiesParent);
             }
         }
-        #endregion
+#endregion
 
-        #region Helper Functions
+#region Helper Functions
         public void RevealAllTiles() {
             for(int x = 0; x < km_stageWidth; x++) {
                 for(int y = 0; y < km_stageHeight; y++) {
@@ -545,6 +545,6 @@ namespace FourthDimension.Dungeon {
 
             return null;
         }
-        #endregion
+#endregion
     }
 }
